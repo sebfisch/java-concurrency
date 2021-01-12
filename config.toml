@@ -1,0 +1,11 @@
+baseURL = "http://sebfisch.github.io/java-parcon"
+languageCode = "en-us"
+title = "Java Concurrency"
+publishDir = "docs"
+theme = "book"
+enableGitInfo = true
+disableKinds = ['taxonomy', 'taxonomyTerm']
+
+[params]
+  BookSearch = false
+  BookComments = false

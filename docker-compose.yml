@@ -1,0 +1,28 @@
+version: "3"
+volumes:
+  home:
+services:
+  dev:
+    build:
+      context: "https://github.com/sebfisch/docker-wiki-dev.git#latest"
+      # Adjust the build args to reflect your local setup
+      # args:
+        # HOME: /home/me
+        # USER: me
+        # UID: 501
+        # GROUP: me
+        # GID: 501
+    hostname: wiki-dev
+    command: tmux -u new -s java-parcon
+    environment:
+      # Adjust to reflect your own timezone
+      - TZ=Europe/Berlin
+    volumes:
+      - home:/home
+      # Adjust directories and user to reflect above changes to build args
+      - ~/.ssh:/home/me/.ssh/:ro
+      - .:/home/me/java-parcon
+    working_dir: /home/me/java-parcon
+    user: me
+    ports:
+      - "1313:1313"
