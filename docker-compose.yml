@@ -13,7 +13,7 @@ services:
         # GROUP: me
         # GID: 501
     hostname: wiki-dev
-    command: tmux -u new -s java-parcon
+    command: tmux -u new -s java-concurrency
     environment:
       # Adjust to reflect your own timezone
       - TZ=Europe/Berlin
@@ -21,8 +21,8 @@ services:
       - home:/home
       # Adjust directories and user to reflect above changes to build args
       - ~/.ssh:/home/me/.ssh/:ro
-      - .:/home/me/java-parcon
-    working_dir: /home/me/java-parcon
+      - .:/home/me/java-concurrency
+    working_dir: /home/me/java-concurrency
     user: me
     ports:
       - "1313:1313"
