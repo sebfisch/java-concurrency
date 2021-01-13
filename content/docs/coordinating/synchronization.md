@@ -117,7 +117,7 @@ Interested readers are encouraged to look for the
 Locks are released when a thread exits a synchronized block.
 Alternatively, threads can release a lock they are holding
 by calling `wait` on the corresponding object.
-The `wait` methods blocks until another thread notifies
+The `wait` method blocks until another thread notifies
 waiting threads, usually with `notifyAll`.
 The following test demonstrates how threads can wait for
 and notify each other.
