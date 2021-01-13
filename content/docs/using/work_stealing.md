@@ -37,7 +37,7 @@ void testRecursiveTasks() {
     final Future<Integer> fib10 = pool.submit(new Fib(10));
 
     try {
-        assertEquals(fib10.get(), 55);
+        assertEquals(55, fib10.get());
     } catch (InterruptedException | ExecutionException e) {}
 }
 ```
@@ -80,7 +80,7 @@ The compute method creates two recursive sub-tasks,
 schedules the first using the `fork` method,
 executes the second directly,
 and then combines the results,
-possibly waiting for the result of the first tasks
+possibly waiting for the result of the first task
 using the `join` method.
 The `join` method is like `get`
 (`ForkJoinTasks` are actually futures)
