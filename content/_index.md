@@ -44,7 +44,7 @@ accessing the same memory and files.
 They can be (and usually are) coordinated,
 for example to wait for and consume results
 computed by other threads.
-Usind and coordinating multiple threads of execution
+Using and coordinating multiple threads of execution
 in a program is called concurrent programming.
 
 Concurrent programs can be executed using parallelism
