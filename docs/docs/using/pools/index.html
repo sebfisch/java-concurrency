@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Thread Pools #  The program discussed in the previous section might start more threads than processor cores are available. It is often more efficient to create threads corresponding to available cores in advance and reuse them. So called thread pools are used to implement this approach.
+Before implementing a renderer using a thread pool we write tests to learn about their API.
+Testing the API #  The following test creates a thread pool and submits a task for execution.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Thread Pools" />
+<meta property="og:description" content="Thread Pools #  The program discussed in the previous section might start more threads than processor cores are available. It is often more efficient to create threads corresponding to available cores in advance and reuse them. So called thread pools are used to implement this approach.
+Before implementing a renderer using a thread pool we write tests to learn about their API.
+Testing the API #  The following test creates a thread pool and submits a task for execution." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/pools/" />
+<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<title>Thread Pools | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class=" active">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Thread Pools</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#testing-the-api">Testing the API</a></li>
+    <li><a href="#task-write-more-tests">Task: Write more tests</a></li>
+    <li><a href="#rendering-with-a-thread-pool">Rendering with a thread pool</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="thread-pools">
+  Thread Pools
+  <a class="anchor" href="#thread-pools">#</a>
+</h1>
+<p>The program discussed in the previous section
+might start more threads than processor cores are available.
+It is often more efficient to create threads corresponding to
+available cores in advance and reuse them.
+So called thread pools are used to implement this approach.</p>
+<p>Before implementing a renderer using a thread pool
+we write tests to learn about their API.</p>
+<h2 id="testing-the-api">
+  Testing the API
+  <a class="anchor" href="#testing-the-api">#</a>
+</h2>
+<p>The following test creates a thread pool
+and submits a task for execution.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testSubmittingToAThreadPool</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> threadCount <span style="color:#f92672">=</span> Runtime<span style="color:#f92672">.</span><span style="color:#a6e22e">getRuntime</span><span style="color:#f92672">().</span><span style="color:#a6e22e">availableProcessors</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">final</span> ExecutorService pool <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newFixedThreadPool</span><span style="color:#f92672">(</span>threadCount<span style="color:#f92672">);</span>
+
+    <span style="color:#66d9ef">final</span> Future<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> future <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> 42<span style="color:#f92672">);</span>
+
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        assertEquals<span style="color:#f92672">(</span>42<span style="color:#f92672">,</span> future<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException <span style="color:#f92672">|</span> ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The number of available processors is queried
+and then used to create a thread pool of fixed size.
+The <code>submit</code> method is used to pass an anonymous
+instance of <code>Callable</code> to be executed by a thread in the pool.
+The result of <code>submit</code> is an instance of <code>Future</code>
+that can be used to check if the task is completed using <code>isDone</code>
+and to query the task result using <code>get</code>.</p>
+<p>The <code>get</code> method blocks until the task is completed
+similar to the <code>join</code> method for threads.
+It throws an <code>InterruptedException</code> if the thread
+executing the task is interrupted
+and an <code>ExecutionException</code> if the task throws an exception.
+There is another variant of <code>get</code>
+that accepts a time limit as argument
+and throws a <code>TimeoutException</code>
+if the task does not finish before the given limit.</p>
+<p>Thread pools can be terminated with the <code>shutdown</code> method.
+After calling <code>shutdown</code>, the pool does not accept
+more tasks to be submitted
+(throwing a <code>RejectedExecutionException</code> instead)
+but continues to execute running tasks.
+There is a variant <code>shutdownNow</code> that attempts
+to stop executing tasks and returns a list of waiting tasks.</p>
+<p>The next test demonstrates how to cancel futures.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testCancellingAFuture</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> ExecutorService pool <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newSingleThreadExecutor</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;?&gt;</span> interruptions <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+    <span style="color:#66d9ef">final</span> Future<span style="color:#f92672">&lt;?&gt;</span> future <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">interrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                interruptions<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        interruptions<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">});</span>
+
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MILLISECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>100<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+
+    future<span style="color:#f92672">.</span><span style="color:#a6e22e">cancel</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+    assertTrue<span style="color:#f92672">(</span>future<span style="color:#f92672">.</span><span style="color:#a6e22e">isCancelled</span><span style="color:#f92672">());</span> 
+
+    <span style="color:#66d9ef">boolean</span> cancelled <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        future<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException <span style="color:#f92672">|</span> ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>CancellationException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        cancelled <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    assertTrue<span style="color:#f92672">(</span>cancelled<span style="color:#f92672">);</span>
+    assertEquals<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> interruptions<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Just to demonstrate the use of a different executor,
+we create a pool with a single thread.
+This time we pass a task that does not return a result
+as anonymous <code>Runnable</code> instance to <code>submit</code>.</p>
+<p>After submitting the future,
+we give the pool some time to start executing it
+before calling <code>cancel</code> on the returned future.
+The <code>cancel</code> method accepts a boolean argument.
+If it is <code>true</code>, the thread executing the task is interrupted.
+Calling <code>get</code> on a cancelled future
+results in a <code>CancellationException</code>.</p>
+<h2 id="task-write-more-tests">
+  Task: Write more tests
+  <a class="anchor" href="#task-write-more-tests">#</a>
+</h2>
+<p>Study the documentation for <code>ExecutorService</code> and <code>Future</code>.
+Write more tests that you find interesting.
+Alternatively, write tests documenting the behaviour
+of <code>ScheduledExecutorServices</code>.
+The class <code>Executors</code> has static methods to create them.</p>
+<h2 id="rendering-with-a-thread-pool">
+  Rendering with a thread pool
+  <a class="anchor" href="#rendering-with-a-thread-pool">#</a>
+</h2>
+<p>We are now ready to implement a renderer
+that reuses threads when rendering an image
+with more parts than available processors.
+Here is the <code>render</code> method
+of the <code>ThreadPoolRenderer</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> join<span style="color:#f92672">(</span>fork<span style="color:#f92672">(</span>ForkJoinPool<span style="color:#f92672">.</span><span style="color:#a6e22e">commonPool</span><span style="color:#f92672">(),</span> pixels<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>We use <code>ForkJoinPool.commonPool</code> to access a thread pool
+that is configured to run many non-blocking tasks
+optimized for the available processors.
+Here is the implementation of the <code>fork</code> method.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> fork<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ExecutorService pool<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Thread origin <span style="color:#f92672">=</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">return</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">split</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>part <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">(</span>Runnable<span style="color:#f92672">)</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>part<span style="color:#f92672">,</span> origin<span style="color:#f92672">))</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>pool<span style="color:#f92672">::</span>submit<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toList</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>It returns a list of futures
+corresponding to rendering tasks
+using an underlying <code>StreamRenderer</code>
+that is passed a reference to the calling thread
+to be tested for interruptions.</p>
+<p>The <code>join</code> method waits for the tasks to complete
+by calling <code>get</code> on the corresponding futures.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">join</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> futures<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> futures<span style="color:#f92672">.</span><span style="color:#a6e22e">stream</span><span style="color:#f92672">().</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>future <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            future<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException <span style="color:#f92672">|</span> ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}).</span><span style="color:#a6e22e">allMatch</span><span style="color:#f92672">(</span>ok <span style="color:#f92672">-&gt;</span> ok<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The result of <code>join</code> signifies
+whether the calling thread waited successfully for all tasks
+without being interrupted.</p>
+<p>The following picture has been created using the <code>ThreadPoolRenderer</code>.</p>
+<p><img src="../pool.png" alt="Part of the Mandelbrot fractal" /></p>
+<p>This time parts colored with the same hue
+have been rendererd by the same thread.</p>
+<p>The picture has been created by zooming in
+on some part of the Mandelbrot fractal.
+Rendering is more costly when zoomed in,
+and bright parts take significantly
+longer to compute than dark parts.
+When observing the rendering process closely,
+we see that the bottom right part of the picture
+is completed last.
+In the end, only a few threads are occupied
+rendering the remaining parts of the image
+even if more processors would be available.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#testing-the-api">Testing the API</a></li>
+    <li><a href="#task-write-more-tests">Task: Write more tests</a></li>
+    <li><a href="#rendering-with-a-thread-pool">Rendering with a thread pool</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

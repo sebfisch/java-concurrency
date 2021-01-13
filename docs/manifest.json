@@ -1,0 +1,15 @@
+{
+  "name": "Java Concurrency",
+  "short_name": "Java Concurrency",
+  "start_url": "/java-concurrency/",
+  "scope": "/java-concurrency/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/java-concurrency/favicon.svg",
+      "sizes": "512x512"
+    }
+  ]
+}

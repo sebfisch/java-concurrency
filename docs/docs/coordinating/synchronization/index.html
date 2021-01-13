@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Classic Synchronization #  In this section we discuss traditional synchronization primitives that have been provided in Java from the beginning.
+Thread Interference #  Before discussing synchronization, we look at what can happen if different threads lack coordination. We will use a shared mutable object of the following class to demonstrate thread interference.
+class Count { public int count = 0; } The following test creates two threads that manipulate a Count instance.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Classic Synchronization" />
+<meta property="og:description" content="Classic Synchronization #  In this section we discuss traditional synchronization primitives that have been provided in Java from the beginning.
+Thread Interference #  Before discussing synchronization, we look at what can happen if different threads lack coordination. We will use a shared mutable object of the following class to demonstrate thread interference.
+class Count { public int count = 0; } The following test creates two threads that manipulate a Count instance." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" />
+<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<title>Classic Synchronization | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class=" active">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Classic Synchronization</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#thread-interference">Thread Interference</a></li>
+    <li><a href="#intrinsic-locks">Intrinsic Locks</a></li>
+    <li><a href="#releasing-locks">Releasing locks</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="classic-synchronization">
+  Classic Synchronization
+  <a class="anchor" href="#classic-synchronization">#</a>
+</h1>
+<p>In this section we discuss traditional synchronization primitives
+that have been provided in Java from the beginning.</p>
+<h2 id="thread-interference">
+  Thread Interference
+  <a class="anchor" href="#thread-interference">#</a>
+</h2>
+<p>Before discussing synchronization,
+we look at what can happen if different threads lack coordination.
+We will use a shared mutable object of the following class
+to demonstrate thread interference.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Count</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The following test creates two threads
+that manipulate a <code>Count</code> instance.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThreadInterference</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> Count count <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Count<span style="color:#f92672">();</span>
+
+    <span style="color:#66d9ef">final</span> Runnable inc <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> val <span style="color:#f92672">=</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">;</span>
+        randomSleep<span style="color:#f92672">();</span>
+        count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> val <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+    <span style="color:#f92672">};</span>
+
+    <span style="color:#66d9ef">final</span> Runnable dec <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> val <span style="color:#f92672">=</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">;</span>
+        randomSleep<span style="color:#f92672">();</span>
+        count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> val <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+    <span style="color:#f92672">};</span>
+
+    <span style="color:#66d9ef">final</span> IntSupplier race <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> Thread incThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>inc<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">final</span> Thread decThread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>dec<span style="color:#f92672">);</span>
+        incThread<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        decThread<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            incThread<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+            decThread<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+        <span style="color:#66d9ef">return</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">};</span>
+
+    assertTrue<span style="color:#f92672">(</span>IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">generate</span><span style="color:#f92672">(</span>race<span style="color:#f92672">).</span><span style="color:#a6e22e">limit</span><span style="color:#f92672">(</span>100<span style="color:#f92672">).</span><span style="color:#a6e22e">anyMatch</span><span style="color:#f92672">(</span>n <span style="color:#f92672">-&gt;</span> n <span style="color:#f92672">!=</span> 0<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The definitions of <code>inc</code> and <code>dec</code>
+to increment and decrement the shared <code>count</code> are only correct,
+if the count is not changed by another thread during the <code>randomSleep</code>.
+However, when executing the <code>race</code> many times,
+it is highly likely that the count is manipulated by the other thread
+at least in some executions.</p>
+<h2 id="intrinsic-locks">
+  Intrinsic Locks
+  <a class="anchor" href="#intrinsic-locks">#</a>
+</h2>
+<p>In Java, every object has a built-in lock.
+We can modify the definitions of <code>inc</code> and <code>dec</code>
+to use the <code>synchronized</code> keyword as follows.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">final</span> Runnable inc <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>count<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> val <span style="color:#f92672">=</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">;</span>
+        randomSleep<span style="color:#f92672">();</span>
+        count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> val <span style="color:#f92672">+</span> 1<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">};</span>
+
+<span style="color:#66d9ef">final</span> Runnable dec <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>count<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> val <span style="color:#f92672">=</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">;</span>
+        randomSleep<span style="color:#f92672">();</span>
+        count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> val <span style="color:#f92672">-</span> 1<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">};</span>
+</code></pre></div><p>When executing the synchronized block,
+no other thread can enter a block
+synchronized on the same object.
+The behaviour of the intrinsic lock is re-entrant,
+meaning that a thread that is already holding a lock of an object
+can enter other blocks synchronized on the same object.</p>
+<p>Now, the assertion in the end can be rewritten
+to demonstrate that no thread interferes with the other
+between reading and writing the count value.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">assertTrue<span style="color:#f92672">(</span>IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">generate</span><span style="color:#f92672">(</span>race<span style="color:#f92672">).</span><span style="color:#a6e22e">limit</span><span style="color:#f92672">(</span>100<span style="color:#f92672">).</span><span style="color:#a6e22e">allMatch</span><span style="color:#f92672">(</span>n <span style="color:#f92672">-&gt;</span> n <span style="color:#f92672">==</span> 0<span style="color:#f92672">));</span>
+</code></pre></div><p>The <code>synchronized</code> keyword can also be used in method signatures,
+meaning that the whole method definition is wrapped in a block
+synchronized on the object the method is called on.</p>
+<p>The <code>FractalApp</code> uses intrinsic locks
+to synchronize read and write access to a buffered image.
+Interested readers are encouraged to look for the
+<code>synchronized</code> keyword in the <code>ImageCanvas</code> class.</p>
+<h2 id="releasing-locks">
+  Releasing locks
+  <a class="anchor" href="#releasing-locks">#</a>
+</h2>
+<p>Locks are released when a thread exits a synchronized block.
+Alternatively, threads can release a lock they are holding
+by calling <code>wait</code> on the corresponding object.
+The <code>wait</code> methods blocks until another thread notifies
+waiting threads, usually with <code>notifyAll</code>.
+The following test demonstrates how threads can wait for
+and notify each other.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testIntrinsicLockRelease</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> Count count <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Count<span style="color:#f92672">();</span>
+
+    <span style="color:#66d9ef">final</span> Runnable consume <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>count<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">==</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    count<span style="color:#f92672">.</span><span style="color:#a6e22e">wait</span><span style="color:#f92672">();</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+            <span style="color:#f92672">}</span>
+            count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+            count<span style="color:#f92672">.</span><span style="color:#a6e22e">notifyAll</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">};</span>
+
+    <span style="color:#66d9ef">final</span> Runnable produce <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>count<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    count<span style="color:#f92672">.</span><span style="color:#a6e22e">wait</span><span style="color:#f92672">();</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+            <span style="color:#f92672">}</span>
+            count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span> <span style="color:#f92672">=</span> 10<span style="color:#f92672">;</span>
+            count<span style="color:#f92672">.</span><span style="color:#a6e22e">notifyAll</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">};</span>
+
+    <span style="color:#66d9ef">final</span> IntSupplier handshake <span style="color:#f92672">=</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> Thread consumer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>consume<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">final</span> Thread producer <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(</span>produce<span style="color:#f92672">);</span>
+        consumer<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        producer<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            consumer<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+            producer<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+        <span style="color:#66d9ef">return</span> count<span style="color:#f92672">.</span><span style="color:#a6e22e">value</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">};</span>
+
+    assertTrue<span style="color:#f92672">(</span>IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">generate</span><span style="color:#f92672">(</span>handshake<span style="color:#f92672">).</span><span style="color:#a6e22e">limit</span><span style="color:#f92672">(</span>100<span style="color:#f92672">).</span><span style="color:#a6e22e">allMatch</span><span style="color:#f92672">(</span>n <span style="color:#f92672">-&gt;</span> n <span style="color:#f92672">==</span> 0<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The sonsumer waits as long as the count value is zero,
+and the producer waits as long as it is non-zero.
+Regardless of which thread enters the synchronized block first,
+the producer will be the first to exit its waiting loop,
+write a non-zero count value,
+and notify the consumer,
+which will then continue to reset the count value to zero again.</p>
+<p>Waiting threads should not assume
+that the condition they are waiting for
+is satisfied when they are notified.
+It is common practice to test it in a loop.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#thread-interference">Thread Interference</a></li>
+    <li><a href="#intrinsic-locks">Intrinsic Locks</a></li>
+    <li><a href="#releasing-locks">Releasing locks</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

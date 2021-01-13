@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Classic Interface #  Before discussing a practical example of using threads, we write tests to get comfortable using their API.
+Testing the API #  In Java, threads are instances of the Thread class. The following test shows how to start two threads and wait for them to be finished.
+void testHowToStartAndJoinThreads() { final List&lt;Integer&gt; results = new ArrayList&lt;&gt;(); final Thread one = new Thread(() -&gt; results.add(1)); final Thread two = new Thread(() -&gt; results.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Classic Interface" />
+<meta property="og:description" content="Classic Interface #  Before discussing a practical example of using threads, we write tests to get comfortable using their API.
+Testing the API #  In Java, threads are instances of the Thread class. The following test shows how to start two threads and wait for them to be finished.
+void testHowToStartAndJoinThreads() { final List&lt;Integer&gt; results = new ArrayList&lt;&gt;(); final Thread one = new Thread(() -&gt; results.add(1)); final Thread two = new Thread(() -&gt; results." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/classic/" />
+<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<title>Classic Interface | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class=" active">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Classic Interface</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#testing-the-api">Testing the API</a></li>
+    <li><a href="#rendering-fractal-images">Rendering fractal images</a></li>
+    <li><a href="#rendering-with-multiple-threads">Rendering with multiple threads</a></li>
+    <li><a href="#task-trying-out-the-fractal-app">Task: Trying out the fractal app</a></li>
+    <li><a href="#task-simpler-handling-of-interruptions">Task: Simpler handling of interruptions</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="classic-interface">
+  Classic Interface
+  <a class="anchor" href="#classic-interface">#</a>
+</h1>
+<p>Before discussing a practical example of using threads,
+we write tests to get comfortable using their API.</p>
+<h2 id="testing-the-api">
+  Testing the API
+  <a class="anchor" href="#testing-the-api">#</a>
+</h2>
+<p>In Java, threads are instances of the <code>Thread</code> class.
+The following test shows how to start two threads
+and wait for them to be finished.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testHowToStartAndJoinThreads</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> results <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+
+    <span style="color:#66d9ef">final</span> Thread one <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>1<span style="color:#f92672">));</span>
+    <span style="color:#66d9ef">final</span> Thread two <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>2<span style="color:#f92672">));</span>
+
+    assertFalse<span style="color:#f92672">(</span>one<span style="color:#f92672">.</span><span style="color:#a6e22e">isAlive</span><span style="color:#f92672">());</span>
+    assertFalse<span style="color:#f92672">(</span>two<span style="color:#f92672">.</span><span style="color:#a6e22e">isAlive</span><span style="color:#f92672">());</span>
+
+    assertTrue<span style="color:#f92672">(</span>results<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">());</span>
+
+    one<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+    two<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+
+    <span style="color:#75715e">// assertTrue(one.isAlive());
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// assertTrue(two.isAlive());
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        one<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+        two<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+
+    assertFalse<span style="color:#f92672">(</span>one<span style="color:#f92672">.</span><span style="color:#a6e22e">isAlive</span><span style="color:#f92672">());</span>
+    assertFalse<span style="color:#f92672">(</span>two<span style="color:#f92672">.</span><span style="color:#a6e22e">isAlive</span><span style="color:#f92672">());</span>
+
+    assertEquals<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Threads can be created by passing a <code>Runnable</code> instance to the constructor.
+Here, we use
+lambda expressions
+to create corresponding <code>Runnable</code> instances concisely.</p>
+<p>The method <code>isAlive</code> returns <code>true</code> when called on a thread
+that has been started but not yet completed execution.
+We can see that created threads are not started automatically.
+They are executed only after calling their <code>start</code> method.
+Whether the commented out assertions succeed or not
+depends on whether the started threads complete their execution
+before the main program checks if they are alive.
+You can try to remove the comment signs
+to see how the tests behaves on your computer.
+It may or may not pass based on the order of execution.</p>
+<p>We get predictable results only after waiting
+for both threads to complete.
+The <code>join</code> method blocks the calling thread
+if the thread it is called on is still alive.
+After executing <code>join</code> on both started threads
+the calling thread checks again if they are alive.
+They are not alive anymore,
+because the calling thread was blocked
+as long as they were alive.
+At this point we can also be sure
+that both threads have written to the list of results.
+We cannot predict the order of elements in the <code>results</code> list
+which is non-deterministic and depends on the order of execution.</p>
+<p>Blocking operations usually throw an <code>InterruptedException</code>
+when the calling thread is interrupted (more on that below.)
+In this test, we do not expect the calling thread to be interrupted,
+so we ignore the exception.</p>
+<p>The next test shows how to interrupt a started thread.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testHowToClearInterruptStatus</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> Thread thread <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">interrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">});</span>
+
+    thread<span style="color:#f92672">.</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+    thread<span style="color:#f92672">.</span><span style="color:#a6e22e">interrupt</span><span style="color:#f92672">();</span>
+    
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        thread<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+
+    assertFalse<span style="color:#f92672">(</span>thread<span style="color:#f92672">.</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>When started, the created thread runs circles in a loop
+as long as it is not interrupted.
+The static method <code>Thread.interrupted</code>
+checks if the calling thread has been interrupted.
+To spare processor cycles,
+we use <code>sleep</code> to block the thread most of the time.
+As <code>sleep</code> is a blocking operation,
+it can throw an <code>InterruptedException</code>.
+If it does, we terminate the loop using <code>return</code>.</p>
+<p>After calling <code>start</code>,
+the calling thread immediately interrupts the started thread
+by calling its <code>interrupt</code> method.
+In general, the <code>interrupt</code> method does not stop the execution
+of the thread it is called on.
+It merely asks the thread to complete its execution prematurely
+by setting its interrupt status flag.
+We have already seen that blocking methods
+react to interruptions with an <code>InterruptedException</code>.
+Threads that do not call blocking methods
+should test for interruptions themselves.</p>
+<p>Maybe surprisingly, the interrupt status flag may sometimes be cleared.
+By convention, operations that throw an <code>InterruptedException</code>
+clear the flag, and so does <code>Thread.interrupted</code>.
+Ae a result, checking the flag for a second time
+might not yield the same result as the first time.
+In our test, the flag will be cleared
+(either by <code>sleep</code> or by <code>Thread.interrupted</code>)
+after the started thread is finished.
+As a consequence, testing it again yields <code>false</code>.
+Note that the second test uses the instance method
+<code>isInterrupted</code> rather than the static method
+because it needs to check the interrupt status flag
+of a different thread.
+Unlike the static method,
+the instance method does not clear the interrupt status flag.
+We could use <code>Thread.currentThread().isInterrupted()</code>
+if we wanted to check the interrupt status of the calling thread
+without clearing it.</p>
+<h2 id="rendering-fractal-images">
+  Rendering fractal images
+  <a class="anchor" href="#rendering-fractal-images">#</a>
+</h2>
+<p>We now turn to a more realistic example of using threads in Java.
+Fractal images can be computed by running a potentially costly computation
+to determine each of their pixels.
+The class <code>FractalApp</code> starts a graphical application
+that can be used to compare different approaches to execute such computations.
+It has been used to create the following picture of the mandelbrot fractal.</p>
+<p><img src="../mandelbrot.png" alt="The Mandelbrot fractal" /></p>
+<p>We will not discuss how this application represents fractal images
+or how it manages to continuously update the shown image with partial renderings
+as they are computed.
+Interested readers are encouraged to look at the code on their own.
+Here, we will focus on how to compute pixels.
+This task is abstracted with the <code>Renderer</code> interface
+which we will get to know as we go along.</p>
+<p>The simplest renderer does not use separate threads
+but simply computes each required pixel one at a time.
+It is implemented in the class <code>StreamRenderer</code>
+which uses stream programming to go through all pixels.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">StreamRenderer</span> <span style="color:#66d9ef">extends</span> AbstractRenderer <span style="color:#f92672">{</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> render<span style="color:#f92672">(</span>pixels<span style="color:#f92672">,</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Thread origin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>image <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> params <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> raster <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> width <span style="color:#f92672">=</span> raster<span style="color:#f92672">.</span><span style="color:#a6e22e">getWidth</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> height <span style="color:#f92672">=</span> raster<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeight</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> w <span style="color:#f92672">=</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">x</span><span style="color:#f92672">;</span>
+        
+        IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> w <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span><span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">final</span> Pixel pixel <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">new</span> Pixel<span style="color:#f92672">(</span>index <span style="color:#f92672">%</span> w<span style="color:#f92672">,</span> index <span style="color:#f92672">/</span> w<span style="color:#f92672">).</span><span style="color:#a6e22e">plus</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">min</span><span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">final</span> Point point <span style="color:#f92672">=</span> params<span style="color:#f92672">.</span><span style="color:#a6e22e">pointAt</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">,</span> width<span style="color:#f92672">,</span> height<span style="color:#f92672">);</span>
+                raster<span style="color:#f92672">.</span><span style="color:#a6e22e">setPixelColor</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">,</span> image<span style="color:#f92672">.</span><span style="color:#a6e22e">colorAt</span><span style="color:#f92672">(</span>point<span style="color:#f92672">));</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">});</span>
+        
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Renderers have access to</p>
+<ul>
+<li>an <code>image</code> that determines the color of points</li>
+<li>image <code>params</code> that transform between pixel and point coordinate systems</li>
+<li>and a pixel <code>raster</code> where pixels can be written to.</li>
+</ul>
+<p>The image <code>params</code> are useful for zooming into arbitrary parts of a fractal
+which changes to which points pixels correspond.</p>
+<p>The <code>render</code> method is parameterized with a <code>Box</code>
+which determines which pixels of the <code>raster</code> should be rendered.
+This will be useful later, when rendering different parts
+of the picture with different threads.</p>
+<p>What&rsquo;s interesting about this renderer is that it</p>
+<ul>
+<li>computes all pixels sequentially</li>
+<li>and stops performing costly computations when the calling thread is interrupted.</li>
+</ul>
+<p>The result of the <code>render</code> method signifies whether rendering was completed.</p>
+<h2 id="rendering-with-multiple-threads">
+  Rendering with multiple threads
+  <a class="anchor" href="#rendering-with-multiple-threads">#</a>
+</h2>
+<p>Now, we implement a renderer
+that uses multiple threads to render different parts of the image.
+The new renderer uses the renderer defined before
+for rendering each individual part.
+Here is its <code>render</code> method.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Thread<span style="color:#f92672">&gt;</span> threads <span style="color:#f92672">=</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">split</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>part <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">(</span>Runnable<span style="color:#f92672">)</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>part<span style="color:#f92672">))</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toList</span><span style="color:#f92672">());</span>
+    fork<span style="color:#f92672">(</span>threads<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">return</span> join<span style="color:#f92672">(</span>threads<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <code>renderer</code> is an instance of <code>StreamRenderer</code> defined before.
+The method <code>fork</code> starts every thread in the given list.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">fork</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Thread<span style="color:#f92672">&gt;</span> threads<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    threads<span style="color:#f92672">.</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">::</span>start<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <code>join</code> method is a little more complicated.
+It waits for the given threads to finish
+and passes on interruptions.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">join</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Thread<span style="color:#f92672">&gt;</span> threads<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>threads<span style="color:#f92672">.</span><span style="color:#a6e22e">stream</span><span style="color:#f92672">().</span><span style="color:#a6e22e">anyMatch</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">::</span>isAlive<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            interruptAll<span style="color:#f92672">(</span>threads<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            interruptAll<span style="color:#f92672">(</span>threads<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The method <code>interruptAll</code> interrupts all threads in the given list.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">interruptAll</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Thread<span style="color:#f92672">&gt;</span> threads<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    threads<span style="color:#f92672">.</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">::</span>interrupt<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <code>FractalApp</code> allows to color different parts of the image differently
+based on which thread was used to render it.
+The following picture has been created by the <code>MultiThreadedRenderer</code>.</p>
+<p><img src="../threads.png" alt="Rendering different parts with different threads" /></p>
+<p>Note that different parts with the same color have still been rendered
+by different threads because a new thread was created for each part.</p>
+<h2 id="task-trying-out-the-fractal-app">
+  Task: Trying out the fractal app
+  <a class="anchor" href="#task-trying-out-the-fractal-app">#</a>
+</h2>
+<p>Try out the <code>FractalApp</code> with different renderers
+by editing the corresponding class accordingly.
+You can zoom in on a point by clicking into the picture.
+With a right click you can zoom out around the clicked point.</p>
+<p>The more you zoom in the longer rendering will take.
+The picture will be updated continuously
+until rendering is complete.
+If you click into the picture before rendering is completed,
+a new rendering thread is started
+and the previous one is interrupted.
+The program prints timing information about
+completed and aborted rendering threads to standard output.
+Try out zooming while rendering is still active
+and check if renderers of different types really are aborted.</p>
+<h2 id="task-simpler-handling-of-interruptions">
+  Task: Simpler handling of interruptions
+  <a class="anchor" href="#task-simpler-handling-of-interruptions">#</a>
+</h2>
+<p>The <code>StreamRenderer</code> class provides an alternative <code>render</code> method
+that takes a thread as argument to check for interruptions.
+Change the <code>MultiThreadedRenderer</code> to use this method
+passing the thread of the original <code>render</code> call.
+Simplify the <code>join</code> method to call <code>join</code> on each started thread
+without passing on interruptions.
+Can the <code>MultiThreadedRenderer</code> still be aborted successfully
+after your change?</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#testing-the-api">Testing the API</a></li>
+    <li><a href="#rendering-fractal-images">Rendering fractal images</a></li>
+    <li><a href="#rendering-with-multiple-threads">Rendering with multiple threads</a></li>
+    <li><a href="#task-trying-out-the-fractal-app">Task: Trying out the fractal app</a></li>
+    <li><a href="#task-simpler-handling-of-interruptions">Task: Simpler handling of interruptions</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

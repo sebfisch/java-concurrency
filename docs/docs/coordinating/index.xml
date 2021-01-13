@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Coordinating Threads on Java Concurrency</title>
+    <link>http://sebfisch.github.io/java-concurrency/docs/coordinating/</link>
+    <description>Recent content in Coordinating Threads on Java Concurrency</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="http://sebfisch.github.io/java-concurrency/docs/coordinating/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Classic Synchronization</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/</guid>
+      <description>Classic Synchronization #  In this section we discuss traditional synchronization primitives that have been provided in Java from the beginning.
+Thread Interference #  Before discussing synchronization, we look at what can happen if different threads lack coordination. We will use a shared mutable object of the following class to demonstrate thread interference.
+class Count { public int count = 0; } The following test creates two threads that manipulate a Count instance.</description>
+    </item>
+    
+    <item>
+      <title>Flexible Locking</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/</guid>
+      <description>Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions in the package java.util.concurrent.locks.
+Task: Write tests #  Create a new test suite documenting how Locks and Conditions can be used, and compare their behaviour with the classic synchronization primitives around intrinsic locks.
+Coloring grids #  We now discuss a concurrent algorithm that benefits from the more flexible locks provided by modern Java versions. More specifically, we will use multiple locks for fine grained coordination of read and write access to parts of a shared resource.</description>
+    </item>
+    
+    <item>
+      <title>Completable Futures</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/</guid>
+      <description>Completable Futures #  Completable futures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
+Creating futures #  Completed futures can be created from the value they return.
+void testCreatingCompletedFuture() { final CompletableFuture&amp;lt;Integer&amp;gt; future = // 	CompletableFuture.completedFuture(42); assertEquals(42, future.join()); } Here, the join method is like get but does not throw an InterruptedException. We can use supplyAsync to create a future from an asynchronous computation.</description>
+    </item>
+    
+    <item>
+      <title>Throttling Tasks</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/</guid>
+      <description>Throttling Tasks #  Finally, we look at a class used by the grid coloring application that is useful in other contexts too. To implement the animation, the coloring algorithm notifies the image canvas to rerender the image when colors in the grid change. However, when too many notifications arrive in a short time the user interface thread becomes unresponsive. To avoid overloading the user interface thread with notifications we use a class for throttling tasks represented as Runnable instances.</description>
+    </item>
+    
+  </channel>
+</rss>

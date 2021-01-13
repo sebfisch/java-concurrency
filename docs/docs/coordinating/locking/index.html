@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions in the package java.util.concurrent.locks.
+Task: Write tests #  Create a new test suite documenting how Locks and Conditions can be used, and compare their behaviour with the classic synchronization primitives around intrinsic locks.
+Coloring grids #  We now discuss a concurrent algorithm that benefits from the more flexible locks provided by modern Java versions. More specifically, we will use multiple locks for fine grained coordination of read and write access to parts of a shared resource.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Flexible Locking" />
+<meta property="og:description" content="Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions in the package java.util.concurrent.locks.
+Task: Write tests #  Create a new test suite documenting how Locks and Conditions can be used, and compare their behaviour with the classic synchronization primitives around intrinsic locks.
+Coloring grids #  We now discuss a concurrent algorithm that benefits from the more flexible locks provided by modern Java versions. More specifically, we will use multiple locks for fine grained coordination of read and write access to parts of a shared resource." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" />
+<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<title>Flexible Locking | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class=" active">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Flexible Locking</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#task-write-tests">Task: Write tests</a></li>
+    <li><a href="#coloring-grids">Coloring grids</a>
+      <ul>
+        <li><a href="#sequential-algorithm">Sequential algorithm</a></li>
+        <li><a href="#concurrent-algorithm">Concurrent algorithm</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="flexible-locking">
+  Flexible Locking
+  <a class="anchor" href="#flexible-locking">#</a>
+</h1>
+<p>Modern versions of Java provide classes for <code>Lock</code>s and <code>Condition</code>s
+in the package <code>java.util.concurrent.locks</code>.</p>
+<h2 id="task-write-tests">
+  Task: Write tests
+  <a class="anchor" href="#task-write-tests">#</a>
+</h2>
+<p>Create a new test suite
+documenting how <code>Lock</code>s and <code>Condition</code>s can be used,
+and compare their behaviour with the classic synchronization primitives
+around intrinsic locks.</p>
+<h2 id="coloring-grids">
+  Coloring grids
+  <a class="anchor" href="#coloring-grids">#</a>
+</h2>
+<p>We now discuss a concurrent algorithm
+that benefits from the more flexible locks
+provided by modern Java versions.
+More specifically, we will use multiple locks
+for fine grained coordination of read and write access
+to parts of a shared resource.
+When programming with multiple locks,
+we need to be careful not to run into deadlocks,
+meaning that threads wait for each other
+both holding a lock the other one needs.</p>
+<p>When started, the application shows a colored grid
+that might look as follows.</p>
+<p><img src="../start4x4.png" alt="Colored 4x4 repeating grid with duplicated cells" /></p>
+<p>The grid is interpreted as endlessly repeating grid.
+The picture shows a repeated 4x4 grid.
+In order for us to be able to see all neighbors of each cell,
+the last row and column repeats the first.
+When looking at the (top-left) 4x4 grid closely,
+we can see that the cells all have different colors
+(although, admittedly, the four shades of green look very similar.)</p>
+<p>When clicking in the grid,
+the application shows an animation choosing different colors
+for the cells of the grid.
+The goal is to reduce the number of used colors
+while still maintaining different colors for neighboring cells.
+For a grid with an even number of rows and columns,
+like the 4x4 grid shown above,
+the animation might finish with a coloring using only two colors
+arranged like a chess board.</p>
+<p><img src="../end4x4.png" alt="Minimally colored 4x4 grid" /></p>
+<p>Grids with an odd number of rows and columns
+need to be colored with at least three colors
+when neighboring cells should have different colors.
+Due to the endless nature of the grid
+the last row (and column) is neighboring the first.
+In a chess-board like pattern
+the first row (and column) would be identical to the last
+which is not allowed according to the rules.
+Here is a coloring of a repeated 5x5 grid using three colors
+that has been created using the example application.</p>
+<p><img src="../end5x5.png" alt="Minimally colored repeated 5x5 grid" /></p>
+<h3 id="sequential-algorithm">
+  Sequential algorithm
+  <a class="anchor" href="#sequential-algorithm">#</a>
+</h3>
+<p>Before discussing a concurrent algorithm for coloring grids,
+we present its sequential version.
+The method <code>pickNewColor</code> defined in the class <code>SingleThreadColoring</code>
+implements a recursive algorithm to pick new colors for cells
+starting at the cell with the given coordinates.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">pickNewColor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> row<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> col<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> Set<span style="color:#f92672">&lt;</span>Float<span style="color:#f92672">&gt;</span> neighborHues <span style="color:#f92672">=</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">neighborIndices</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>grid<span style="color:#f92672">::</span>getCell<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>ColoredLock<span style="color:#f92672">::</span>getHue<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toSet</span><span style="color:#f92672">());</span>
+    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">float</span> newHue <span style="color:#f92672">=</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">palette</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">filter</span><span style="color:#f92672">(</span>hue <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">!</span>neighborHues<span style="color:#f92672">.</span><span style="color:#a6e22e">contains</span><span style="color:#f92672">(</span>hue<span style="color:#f92672">))</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">findFirst</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">orElseThrow</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>grid<span style="color:#f92672">.</span><span style="color:#a6e22e">getCell</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">).</span><span style="color:#a6e22e">getHue</span><span style="color:#f92672">()</span> <span style="color:#f92672">!=</span> newHue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        grid<span style="color:#f92672">.</span><span style="color:#a6e22e">getCell</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">).</span><span style="color:#a6e22e">setHue</span><span style="color:#f92672">(</span>newHue<span style="color:#f92672">);</span>
+        grid<span style="color:#f92672">.</span><span style="color:#a6e22e">neighborIndices</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            pickNewColor<span style="color:#f92672">(</span>grid<span style="color:#f92672">.</span><span style="color:#a6e22e">row</span><span style="color:#f92672">(</span>index<span style="color:#f92672">),</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">col</span><span style="color:#f92672">(</span>index<span style="color:#f92672">));</span>
+        <span style="color:#f92672">});</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The method first computes a set of colors of all neighboring cells.
+Then it picks the first color from a palette
+that is not used by any neighbor.
+If the picked color differs from the current color
+the color is changed and the method is called recursively
+for each neighbor of the original cell.
+(The actual implementation includes additional statements
+to manage the animation which we omit here.)</p>
+<p>To pick new colors for all cells in a grid,
+we can apply the function to each of the cells.
+The recursive calls ensure that no two neighboring cells
+have the same color in the end.</p>
+<h3 id="concurrent-algorithm">
+  Concurrent algorithm
+  <a class="anchor" href="#concurrent-algorithm">#</a>
+</h3>
+<p>The presented algorithm is very simple.
+There are more sophisticated coloring algorithms
+that are more efficient and (like ours)
+applicable to different notions of neighbors.
+However, we do not aim to discuss good coloring algorithms.
+Our goal is to discuss basic primitives for concurrent programming.
+Our simple coloring algorithm serves that goal.</p>
+<p>To formulate a concurrent version of the presented algorithm
+we could execute each (initial as well as recursive) call
+of <code>pickNewColor</code> as a separate task using a thread pool.
+Intuitively, different cells should be able to pick a new color
+relatively independently.
+However, such an implementation would not be correct.
+If two neighboring cells pick a new color at the same time
+they might pick the same color if they both consider only the initial color
+of each other.
+We need synchronization to avoid neighboring cells picking their color
+at the same time.</p>
+<p>On the other hand, synchronizing all calls
+to <code>pickNewColor</code> using a single lock
+(for example by declaring the method <code>synchronized</code>)
+would effectively lead to a sequential implementation
+where even cells that are far apart
+could not pick their color at the same time.
+This observation naturally leads us to using more than one lock.
+We will use as many locks as there are cells in the grid
+(not counting repeated cells.)</p>
+<p>Moreover, locking cells individually is not the only thing
+we can do to improve parallelism in our implementation.
+It would be fine for two threads to read the color of the same cell
+simultaneously, as long as that cell does not currently attempt
+to pick a new color for itself.
+This pattern of allowing simultaneous read access as long as there
+is no write access is very common.
+It is supported in Java via <code>ReadWriteLock</code>s.</p>
+<p>We can now discuss the implementation
+of our concurrent algorithm for grid coloring.
+We do not use the common <code>ForkJoinPool</code>
+because our tasks block when waiting for a lock.
+Instead the <code>MultiThreadColoring</code> algorithm uses a chached thread pool.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> ExecutorService POOL <span style="color:#f92672">=</span> Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newCachedThreadPool</span><span style="color:#f92672">();</span>
+</code></pre></div><p>Here is a first (still problematic) concurrent version of <code>pickNewColor</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">pickNewColor</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> row<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> col<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    POOL<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>ColoredLock<span style="color:#f92672">&gt;</span> neighbors <span style="color:#f92672">=</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">neighborIndices</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>grid<span style="color:#f92672">::</span>getCell<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toList</span><span style="color:#f92672">());</span>
+        <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>ColoredLock<span style="color:#f92672">&gt;</span> locked <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;(</span>neighbors<span style="color:#f92672">);</span>
+        locked<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>grid<span style="color:#f92672">.</span><span style="color:#a6e22e">getCell</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">));</span>
+        locked<span style="color:#f92672">.</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>cell <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            cell<span style="color:#f92672">.</span><span style="color:#a6e22e">lock</span><span style="color:#f92672">(</span>cell<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">));</span>
+        <span style="color:#f92672">});</span>
+        <span style="color:#66d9ef">final</span> Set<span style="color:#f92672">&lt;</span>Float<span style="color:#f92672">&gt;</span> neighborHues <span style="color:#f92672">=</span> neighbors<span style="color:#f92672">.</span><span style="color:#a6e22e">stream</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>ColoredLock<span style="color:#f92672">::</span>getHue<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toSet</span><span style="color:#f92672">());</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">float</span> newHue <span style="color:#f92672">=</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">palette</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">filter</span><span style="color:#f92672">(</span>hue <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">!</span>neighborHues<span style="color:#f92672">.</span><span style="color:#a6e22e">contains</span><span style="color:#f92672">(</span>hue<span style="color:#f92672">))</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">findFirst</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">orElseThrow</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>grid<span style="color:#f92672">.</span><span style="color:#a6e22e">getCell</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">).</span><span style="color:#a6e22e">getHue</span><span style="color:#f92672">()</span> <span style="color:#f92672">!=</span> newHue<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            grid<span style="color:#f92672">.</span><span style="color:#a6e22e">getCell</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">).</span><span style="color:#a6e22e">setHue</span><span style="color:#f92672">(</span>newHue<span style="color:#f92672">);</span>
+            locked<span style="color:#f92672">.</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>cell <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                cell<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">(</span>cell<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">));</span>
+            <span style="color:#f92672">});</span>
+            grid<span style="color:#f92672">.</span><span style="color:#a6e22e">neighborIndices</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                pickNewColor<span style="color:#f92672">(</span>grid<span style="color:#f92672">.</span><span style="color:#a6e22e">row</span><span style="color:#f92672">(</span>index<span style="color:#f92672">),</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">col</span><span style="color:#f92672">(</span>index<span style="color:#f92672">));</span>
+            <span style="color:#f92672">});</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            locked<span style="color:#f92672">.</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>cell <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                cell<span style="color:#f92672">.</span><span style="color:#a6e22e">unlock</span><span style="color:#f92672">(</span>cell<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span><span style="color:#f92672">()</span> <span style="color:#f92672">==</span> grid<span style="color:#f92672">.</span><span style="color:#a6e22e">index</span><span style="color:#f92672">(</span>row<span style="color:#f92672">,</span> col<span style="color:#f92672">));</span>
+            <span style="color:#f92672">});</span>    
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">});</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Again, we omit statements managing the animation
+shown in the actual implementation.</p>
+<p>This implementation executes each call to <code>pickNewColor</code>
+as a task in the <code>POOL</code>.
+Compared to the previous version, this version includes
+statements for locking and unlocking grid cells.
+The used <code>lock</code> and <code>unlock</code> methods accept an argument
+signifying whether write access is (or was) required.</p>
+<p>When executing this algorithm,
+the animation usually freezes.
+For example,
+when every task created by an initial call to <code>pickNewColor</code>
+first takes the read lock of its left neighbor,
+then every read lock is taken
+and no task can take a write lock.
+As a consequence, all tasks block each other
+waiting for a write lock corresponding to a read lock
+taken by another task.</p>
+<p>Deadlock occurs if two threads try to take the same locks
+in a different order.
+A common strategy to avoid deadlock is to always take locks
+in the same order.
+We can insert <code>Collections.sort(locked)</code>
+to sort grid cells by their index
+directly after the call to <code>locked.add</code>
+to obtain a concurrent coloring implementation
+that does not freeze.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#task-write-tests">Task: Write tests</a></li>
+    <li><a href="#coloring-grids">Coloring grids</a>
+      <ul>
+        <li><a href="#sequential-algorithm">Sequential algorithm</a></li>
+        <li><a href="#concurrent-algorithm">Concurrent algorithm</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

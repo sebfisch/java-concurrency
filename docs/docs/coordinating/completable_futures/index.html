@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Completable Futures #  Completable futures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
+Creating futures #  Completed futures can be created from the value they return.
+void testCreatingCompletedFuture() { final CompletableFuture&lt;Integer&gt; future = // 	CompletableFuture.completedFuture(42); assertEquals(42, future.join()); } Here, the join method is like get but does not throw an InterruptedException. We can use supplyAsync to create a future from an asynchronous computation.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Completable Futures" />
+<meta property="og:description" content="Completable Futures #  Completable futures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
+Creating futures #  Completed futures can be created from the value they return.
+void testCreatingCompletedFuture() { final CompletableFuture&lt;Integer&gt; future = // 	CompletableFuture.completedFuture(42); assertEquals(42, future.join()); } Here, the join method is like get but does not throw an InterruptedException. We can use supplyAsync to create a future from an asynchronous computation." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" />
+<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<title>Completable Futures | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class=" active">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Completable Futures</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#creating-futures">Creating futures</a></li>
+    <li><a href="#manipulating-futures">Manipulating futures</a></li>
+    <li><a href="#task-handling-exceptions">Task: Handling exceptions</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="completable-futures">
+  Completable Futures
+  <a class="anchor" href="#completable-futures">#</a>
+</h1>
+<p>Completable futures extend futures with numerous methods
+to create more complex futures from simpler ones.
+We will discuss selected parts of their API using tests.</p>
+<h2 id="creating-futures">
+  Creating futures
+  <a class="anchor" href="#creating-futures">#</a>
+</h2>
+<p>Completed futures can be created from the value they return.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testCreatingCompletedFuture</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> future <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>	CompletableFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">completedFuture</span><span style="color:#f92672">(</span>42<span style="color:#f92672">);</span>
+    assertEquals<span style="color:#f92672">(</span>42<span style="color:#f92672">,</span> future<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Here, the <code>join</code> method is like <code>get</code> but does not throw
+an <code>InterruptedException</code>.
+We can use <code>supplyAsync</code> to create a future
+from an asynchronous computation.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testCompletingFutureAsynchronously</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> future <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        CompletableFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">supplyAsync</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> 42<span style="color:#f92672">);</span>
+    assertEquals<span style="color:#f92672">(</span>42<span style="color:#f92672">,</span> future<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span> 
+</code></pre></div><p>The computation is executed on the common <code>ForkJoinPool</code>
+by default.
+An alternative executor can be passed as second argument.
+An even more manual way to create a completed future is
+to call <code>complete</code> from an arbitrary thread.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testCompletingFutureManually</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> future <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> CompletableFuture<span style="color:#f92672">&lt;&gt;();</span>
+    Executors<span style="color:#f92672">.</span><span style="color:#a6e22e">newSingleThreadExecutor</span><span style="color:#f92672">().</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> future<span style="color:#f92672">.</span><span style="color:#a6e22e">complete</span><span style="color:#f92672">(</span>42<span style="color:#f92672">));</span>
+    assertEquals<span style="color:#f92672">(</span>42<span style="color:#f92672">,</span> future<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="manipulating-futures">
+  Manipulating futures
+  <a class="anchor" href="#manipulating-futures">#</a>
+</h2>
+<p>The interface <code>CompletionStage</code> implemented by completable futures
+defines many operations for manipulating completable futures.
+We only show two methods here, one that is like <code>map</code> on streams
+and another that is like <code>flatMap</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatThenApplyIsLikeMap</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> stringFuture <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        CompletableFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">completedFuture</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;hello&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> intFuture <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        stringFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">thenApply</span><span style="color:#f92672">(</span>String<span style="color:#f92672">::</span>length<span style="color:#f92672">);</span>
+    assertEquals<span style="color:#f92672">(</span>5<span style="color:#f92672">,</span> intFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatThenComposeIsLikeFlatMap</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> stringFuture <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        CompletableFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">completedFuture</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ha&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">final</span> CompletableFuture<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> combinedFuture <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        stringFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">thenCompose</span><span style="color:#f92672">(</span>string <span style="color:#f92672">-&gt;</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        CompletableFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">completedFuture</span><span style="color:#f92672">(</span>string<span style="color:#f92672">+</span>string<span style="color:#f92672">));</span>
+    assertEquals<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;haha&#34;</span><span style="color:#f92672">,</span> combinedFuture<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The second test could also be implemented using <code>thenApply</code>
+rather than <code>thenCompose</code>.
+We can see that just like <code>map</code> is a special case of <code>flatMap</code>
+for streams (and optionals, too)
+<code>thenApply</code> is a special case of <code>thenCompose</code>
+for completable futures.</p>
+<h2 id="task-handling-exceptions">
+  Task: Handling exceptions
+  <a class="anchor" href="#task-handling-exceptions">#</a>
+</h2>
+<p>Write more tests for operations involving completable futures
+that you find interesting.
+Include tests that show operations involving exceptions
+and how to handle them.
+Can you express something like <code>filter</code> for streams
+using <code>thenCompose</code> and exceptional futures?</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#creating-futures">Creating futures</a></li>
+    <li><a href="#manipulating-futures">Manipulating futures</a></li>
+    <li><a href="#task-handling-exceptions">Task: Handling exceptions</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

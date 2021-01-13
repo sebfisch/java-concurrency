@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Work Stealing #  In the previous section we have discussed an implementation of a renderer that was reusing threads in a pool to render parts of an image. However, when different tasks consist of different amounts of work then that work might still not be distributed evenly among available threads in the pool.
+The ForkJoinPool class provides a mechanism where tasks can be split recursively into sub-tasks. Every thread has its own task queue and sub-tasks created by a thread are scheduled to run on its own queue.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Work Stealing" />
+<meta property="og:description" content="Work Stealing #  In the previous section we have discussed an implementation of a renderer that was reusing threads in a pool to render parts of an image. However, when different tasks consist of different amounts of work then that work might still not be distributed evenly among available threads in the pool.
+The ForkJoinPool class provides a mechanism where tasks can be split recursively into sub-tasks. Every thread has its own task queue and sub-tasks created by a thread are scheduled to run on its own queue." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" />
+<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<title>Work Stealing | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class=" active">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Work Stealing</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#testing-the-api">Testing the API</a></li>
+    <li><a href="#a-work-stealing-renderer">A work-stealing renderer</a></li>
+    <li><a href="#task-using-the-common-pool">Task: Using the common pool</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="work-stealing">
+  Work Stealing
+  <a class="anchor" href="#work-stealing">#</a>
+</h1>
+<p>In the previous section we have discussed an implementation
+of a renderer that was reusing threads in a pool to
+render parts of an image.
+However, when different tasks consist of different amounts of work
+then that work might still not be distributed evenly
+among available threads in the pool.</p>
+<p>The <code>ForkJoinPool</code> class provides a mechanism
+where tasks can be split recursively into sub-tasks.
+Every thread has its own task queue
+and sub-tasks created by a thread are scheduled to run
+on its own queue.
+However, if threads run out of tasks
+they can steal tasks from the queues of other threads
+in a dynamic attempt to distribute work more evenly.</p>
+<p>Before using this mechanism to implement a renderer,
+we look at the API for using it.</p>
+<h2 id="testing-the-api">
+  Testing the API
+  <a class="anchor" href="#testing-the-api">#</a>
+</h2>
+<p>The following test creates a recursive task for computing
+a fibonacci number.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testRecursiveTasks</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> ForkJoinPool pool <span style="color:#f92672">=</span> ForkJoinPool<span style="color:#f92672">.</span><span style="color:#a6e22e">commonPool</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">final</span> Future<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> fib10 <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Fib<span style="color:#f92672">(</span>10<span style="color:#f92672">));</span>
+
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        assertEquals<span style="color:#f92672">(</span>fib10<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(),</span> 55<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException <span style="color:#f92672">|</span> ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>We use <code>ForkJoinPool.commonPool</code> again to access
+an <code>ExecutorService</code> that is actually an instance
+of the <code>ForkJoinPool</code> class.
+As argument to <code>submit</code>,
+<code>ForkJoinPool</code> instances allow <code>ForkJoinTask</code>s
+which are usually created by subclassing one of two
+provided classes.
+Here is our definition of the <code>Fib</code> class
+as a subclass of <code>RecursiveTask</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Fib</span> <span style="color:#66d9ef">extends</span> RecursiveTask<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> n<span style="color:#f92672">;</span>
+
+    Fib<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> n<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">n</span> <span style="color:#f92672">=</span> n<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">protected</span> Integer <span style="color:#a6e22e">compute</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>n <span style="color:#f92672">&lt;=</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> n<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">final</span> Fib fib1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Fib<span style="color:#f92672">(</span>n <span style="color:#f92672">-</span> 1<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">final</span> Fib fib2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> Fib<span style="color:#f92672">(</span>n <span style="color:#f92672">-</span> 2<span style="color:#f92672">);</span>
+            fib1<span style="color:#f92672">.</span><span style="color:#a6e22e">fork</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">return</span> fib2<span style="color:#f92672">.</span><span style="color:#a6e22e">compute</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> fib1<span style="color:#f92672">.</span><span style="color:#a6e22e">join</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The compute method creates two recursive sub-tasks,
+schedules the first using the <code>fork</code> method,
+executes the second directly,
+and then combines the results,
+possibly waiting for the result of the first tasks
+using the <code>join</code> method.
+The <code>join</code> method is like <code>get</code>
+(<code>ForkJoinTasks</code> are actually futures)
+but behaves differently regarding exceptions.
+Also, <code>join</code> does not throw an <code>InterruptedException</code>
+when the calling thread is interrupted.</p>
+<p>In practical applications of <code>ForkJoinTask</code>s
+the base case should not be as simple as in this example.
+The documentation mentions that, as a rule of thumb,
+the base case should execute between 100 and 10000
+basic computation steps.</p>
+<p><code>ForkJoinTask</code>s behave differently compared to normal futures
+when cancelled.
+An argument signifying that executing threads should be interrupted
+is ignored by <code>ForkJoinTask</code>s as the following test demonstrates.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testCancellingARecursiveAction</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> ForkJoinPool pool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ForkJoinPool<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;?&gt;</span> interruptions <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+
+    <span style="color:#66d9ef">final</span> Future<span style="color:#f92672">&lt;?&gt;</span> future <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> RecursiveAction<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#a6e22e">@Override</span>
+        <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">compute</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">while</span> <span style="color:#f92672">(!</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">interrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+                    TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1<span style="color:#f92672">);</span>
+                <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    interruptions<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+                    <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+            interruptions<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#66d9ef">null</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">});</span>
+
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">MILLISECONDS</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>100<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+
+    future<span style="color:#f92672">.</span><span style="color:#a6e22e">cancel</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+    assertTrue<span style="color:#f92672">(</span>future<span style="color:#f92672">.</span><span style="color:#a6e22e">isCancelled</span><span style="color:#f92672">());</span>
+
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        assertFalse<span style="color:#f92672">(</span>pool<span style="color:#f92672">.</span><span style="color:#a6e22e">awaitTermination</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">SECONDS</span><span style="color:#f92672">));</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdownNow</span><span style="color:#f92672">();</span>
+
+    assertTrue<span style="color:#f92672">(</span>interruptions<span style="color:#f92672">.</span><span style="color:#a6e22e">isEmpty</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Unlike the presious test,
+this one does not use <code>ForkJoinPool.commonPool</code>
+for a reason discussed below.
+This time, we submit a <code>RecursiveAction</code>
+which differs from a <code>RecursiveTask</code>
+by the result type <code>void</code> of the <code>compute</code> method.</p>
+<p>After giving the pool some time to start executing the task
+we cancel it, passing <code>true</code> to <code>cancel</code> in an attempt
+to interrupt the executing thread.
+However, our call to <code>awaitTermination</code>
+with a (rather long) timeout of one second
+shows that the task is not interrupted.
+If it was, <code>awaitTermination</code> would quite likely have returned <code>true</code>
+sooner than within one second.
+Finally, we force an immediate shutdown using <code>shutdownNow</code>
+and assert that indeed there have been no interruptions.</p>
+<p>Our use of <code>shutdown</code> and <code>shutdownNow</code> is the reason
+why we did not use <code>ForkJoinPool.commonPool</code>.
+The common pool is shutdown only when exiting the program,
+so our tested task would run until then.</p>
+<h2 id="a-work-stealing-renderer">
+  A work-stealing renderer
+  <a class="anchor" href="#a-work-stealing-renderer">#</a>
+</h2>
+<p>We are now ready to implement a <code>ForkJoinRenderer</code> using <code>ForkJoinTask</code>s.
+Its <code>render</code> method creates a <code>ForkJoinPool</code>
+just like our last test instead of using the common pool
+in order to be able to shut it down.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> ForkJoinPool pool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ForkJoinPool<span style="color:#f92672">();</span>
+    fork<span style="color:#f92672">(</span>pool<span style="color:#f92672">,</span> pixels<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">return</span> join<span style="color:#f92672">(</span>pool<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <code>fork</code> method creates a recursive action
+and executes it using the pool.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">fork</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ForkJoinPool pool<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Action<span style="color:#f92672">(</span>pixels<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>We use <code>execute</code> instead of <code>submit</code>
+which does not return a future.
+The <code>join</code> method shuts down the pool
+and waits until rendering is completed
+or the calling thread is interrupted.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">join</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ExecutorService pool<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdown</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">awaitTermination</span><span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> TimeUnit<span style="color:#f92672">.</span><span style="color:#a6e22e">HOURS</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        pool<span style="color:#f92672">.</span><span style="color:#a6e22e">shutdownNow</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The timeout of one hour will rarely be reached in practice.
+We expect normal termination or interruption to occur sooner.
+When the calling thread is interrupted
+the rendering tasks are terminated by shutting down the pool immediately.</p>
+<p>The class for recursive rendering actions is defined as follows.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Action</span> <span style="color:#66d9ef">extends</span> RecursiveAction <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">;</span>
+
+    Action<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pixels</span> <span style="color:#f92672">=</span> pixels<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">compute</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span> <span style="color:#f92672">&lt;</span> THRESHOLD<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Action<span style="color:#f92672">&gt;</span> actions <span style="color:#f92672">=</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">split</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>                <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>Action<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>                <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toList</span><span style="color:#f92672">());</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>actions<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                invokeAll<span style="color:#f92672">(</span>actions<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>It uses an appropriate threshold
+to decide whether to split a task further
+and uses an underlying <code>StreamRenderer</code>
+to render pixels in the base case.
+The method <code>invokeAll</code> forks all given tasks
+and waits for them to complete.</p>
+<p>The following picture shows the same part
+of the Mandelbrot fractal that was rendered
+in the previous section
+but was rendered with the <code>ForkJoinRenderer</code> instead.</p>
+<p><img src="../stealing.png" alt="Picture of a work-stealing renderer" /></p>
+<p>The colors show the effect of work stealing
+which allows to distribute the work in the
+bottom right corner more evenly
+among available processors.</p>
+<h2 id="task-using-the-common-pool">
+  Task: Using the common pool
+  <a class="anchor" href="#task-using-the-common-pool">#</a>
+</h2>
+<p>Change the implementation of the <code>ForkJoinRenderer</code>
+to use <code>ForkJoinPool.commonPool</code> instead of a custom pool.
+Modify the definition of <code>fork</code>
+to return a future representing the submitted action.
+Modify the definition of <code>join</code> to accept this future
+as argument instead of the pool.
+Modify the definition of recursive rendering actions
+to use the version of the <code>render</code> method of the
+underlying <code>StreamRenderer</code>
+that allows to check a custom thread for interruptions.
+Pass the calling thread when constructing the actions,
+so it can be passed to calls to <code>render</code> in the base case.
+Can the rendering process still be aborted successfully
+after your changes?</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#testing-the-api">Testing the API</a></li>
+    <li><a href="#a-work-stealing-renderer">A work-stealing renderer</a></li>
+    <li><a href="#task-using-the-common-pool">Task: Using the common pool</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

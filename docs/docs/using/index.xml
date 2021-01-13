@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Using Threads on Java Concurrency</title>
+    <link>http://sebfisch.github.io/java-concurrency/docs/using/</link>
+    <description>Recent content in Using Threads on Java Concurrency</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="http://sebfisch.github.io/java-concurrency/docs/using/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Classic Interface</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/using/classic/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/using/classic/</guid>
+      <description>Classic Interface #  Before discussing a practical example of using threads, we write tests to get comfortable using their API.
+Testing the API #  In Java, threads are instances of the Thread class. The following test shows how to start two threads and wait for them to be finished.
+void testHowToStartAndJoinThreads() { final List&amp;lt;Integer&amp;gt; results = new ArrayList&amp;lt;&amp;gt;(); final Thread one = new Thread(() -&amp;gt; results.add(1)); final Thread two = new Thread(() -&amp;gt; results.</description>
+    </item>
+    
+    <item>
+      <title>Thread Pools</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/using/pools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/using/pools/</guid>
+      <description>Thread Pools #  The program discussed in the previous section might start more threads than processor cores are available. It is often more efficient to create threads corresponding to available cores in advance and reuse them. So called thread pools are used to implement this approach.
+Before implementing a renderer using a thread pool we write tests to learn about their API.
+Testing the API #  The following test creates a thread pool and submits a task for execution.</description>
+    </item>
+    
+    <item>
+      <title>Work Stealing</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/</guid>
+      <description>Work Stealing #  In the previous section we have discussed an implementation of a renderer that was reusing threads in a pool to render parts of an image. However, when different tasks consist of different amounts of work then that work might still not be distributed evenly among available threads in the pool.
+The ForkJoinPool class provides a mechanism where tasks can be split recursively into sub-tasks. Every thread has its own task queue and sub-tasks created by a thread are scheduled to run on its own queue.</description>
+    </item>
+    
+    <item>
+      <title>Parallel Streams</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/</guid>
+      <description>Parallel Streams #  Java streams can be processed in parallel automatically. The implementation of parallel streams is based on work stealing with the common ForkJoinPool.
+Our StreamRenderer is computing pixels using a stream. Here is part of its implementation, again.
+IntStream.range(0, w * pixels.size.y).forEach(index -&amp;gt; { // omitted }); The following change turns this implementation into a work stealing renderer using available processors efficiently.
+IntStream.range(0, w * pixels.size.y).parallel().forEach(index -&amp;gt; { // omitted }); The following picture has been created with the parallel version of the StreamRenderer.</description>
+    </item>
+    
+  </channel>
+</rss>

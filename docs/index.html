@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Parallelism and Concurrency in Java #  Computers can do many things at the same time. Operating systems run multiple programs simultaneously, so we can listen to music while browsing the web. A text editing program might search through one file while we edit another. Computers can also do the same thing on many processors. Image manipulation software often uses multiple cores when applying costly operations to large images.
+Parallelism and concurreny are related but separate concepts.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Parallelism and Concurrency in Java" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/" />
+
+<title>Parallelism and Concurrency in Java | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><link rel="alternate" type="application/rss+xml" href="http://sebfisch.github.io/java-concurrency/index.xml" title="Java Concurrency" />
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Parallelism and Concurrency in Java</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents"></nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="parallelism-and-concurrency-in-java">
+  Parallelism and Concurrency in Java
+  <a class="anchor" href="#parallelism-and-concurrency-in-java">#</a>
+</h1>
+<p>Computers can do many things at the same time.
+Operating systems run multiple programs simultaneously,
+so we can listen to music while browsing the web.
+A text editing program might search through one file
+while we edit another.
+Computers can also do the same thing on many processors.
+Image manipulation software often uses multiple cores
+when applying costly operations to large images.</p>
+<p>Parallelism and concurreny are related but separate concepts.
+Parallelism is about how a program is executed,
+concurrency is about how a program is written.
+In traditional programming languages like Java,
+that support statements mutating memory explicitly,
+how a program is written is often close to
+how it is executed.
+It is still useful to distinguish between these concepts.</p>
+<p>Using parallelism means to execute a program
+using multiple processors or cores
+(or, with hyper-threading, using multiple logical threads.)
+Programs can be executed in parallel even if they are written
+without primitives for concurrent programming.
+Different sub-expressions of an expression could be
+evaluated on different cores if evaluation is costly.
+In Java, stream pipelines can be processed sequentially
+or in parallel with minimal changes to the underlying code.
+Some programs do not require doing multiple things at the same time
+but still benefit from parallel execution on many cores.</p>
+<p>Other programs do require an explicit notion
+of doing multiple things at the same time.
+Such programs must be written with special support
+from programming languages for managing
+multiple so called threads of execution.
+Different threads of a program can be regarded as seperate programs
+accessing the same memory and files.
+They can be (and usually are) coordinated,
+for example to wait for and consume results
+computed by other threads.
+Usind and coordinating multiple threads of execution
+in a program is called concurrent programming.</p>
+<p>Concurrent programs can be executed using parallelism
+if the executing computer has multiple cores.
+They can also be executed sequentially
+where a scheduler switches between different threads
+usually in quick succession.
+The order in which statements in different threads
+are executed is generally unspecified.
+Executing a concurrent program can have non-deterministic effects,
+meaning that different runs may behave differently,
+regardless of whether they are executed using parallelism or not.</p>
+<p>In this tutorial, we will discuss different ways for
+<a href="docs/using/">using</a>
+and
+<a href="docs/coordinating/">coordinating</a>
+threads in Java.
+First, we will compare different ways of using threads
+in a program for rendering images of the Mandelbrot fractal.
+The rendering of such images is costly and can benefit from
+parallel execution.
+Later, we will discuss how to coordinate different threads
+using locks in a concurrent algorithm for coloring grids.
+Coordinating threads can be tricky and we will discuss
+how to avoid blocking computations
+by different threads waiting for each other.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents"></nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
