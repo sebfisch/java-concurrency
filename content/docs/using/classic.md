@@ -134,7 +134,7 @@ should test for interruptions themselves.
 Maybe surprisingly, the interrupt status flag may sometimes be cleared.
 By convention, operations that throw an `InterruptedException`
 clear the flag, and so does `Thread.interrupted`.
-Ae a result, checking the flag for a second time
+As a result, checking the flag for a second time
 might not yield the same result as the first time.
 In our test, the flag will be cleared
 (either by `sleep` or by `Thread.interrupted`)
