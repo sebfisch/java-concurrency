@@ -14,7 +14,7 @@ However, when too many notifications arrive in a short time
 the user interface thread becomes unresponsive.
 To avoid overloading the user interface thread with notifications
 we use a class for throttling tasks represented as `Runnable` instances.
-Throtlling is implemented by delaying executed tasks and ignoring
+Throttling is implemented by delaying executed tasks and ignoring
 subsequent executions until the delay is over.
 
 The `ColoringApp` uses the following line 
