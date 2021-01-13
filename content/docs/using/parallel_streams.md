@@ -5,7 +5,8 @@ weight: 280
 
 # Parallel Streams
 
-Java streams can be processed in parallel automatically.
+[Java streams](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/stream/package-summary.html)
+can be processed in parallel automatically.
 The implementation of parallel streams is based on
 work stealing with the common `ForkJoinPool`.
 

@@ -37,8 +37,11 @@ void testSubmittingToAThreadPool() {
 The number of available processors is queried
 and then used to create a thread pool of fixed size.
 The `submit` method is used to pass an anonymous
-instance of `Callable` to be executed by a thread in the pool.
-The result of `submit` is an instance of `Future`
+instance of
+[Callable](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Callable.html)
+to be executed by a thread in the pool.
+The result of `submit` is an instance of
+[Future](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Future.html)
 that can be used to check if the task is completed using `isDone`
 and to query the task result using `get`.
 
@@ -46,16 +49,21 @@ The `get` method blocks until the task is completed
 similar to the `join` method for threads.
 It throws an `InterruptedException` if the thread
 executing the task is interrupted
-and an `ExecutionException` if the task throws an exception.
+and an
+[ExecutionException](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ExecutionException.html)
+if the task throws an exception.
 There is another variant of `get` 
 that accepts a time limit as argument 
-and throws a `TimeoutException`
+and throws a
+[TimeoutException](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/TimeoutException.html)
 if the task does not finish before the given limit.
 
 Thread pools can be terminated with the `shutdown` method.
 After calling `shutdown`, the pool does not accept
 more tasks to be submitted
-(throwing a `RejectedExecutionException` instead)
+(throwing a
+[RejectedExecutionException](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/RejectedExecutionException.html)
+instead)
 but continues to execute running tasks.
 There is a variant `shutdownNow` that attempts
 to stop executing tasks and returns a list of waiting tasks.
@@ -109,15 +117,22 @@ before calling `cancel` on the returned future.
 The `cancel` method accepts a boolean argument.
 If it is `true`, the thread executing the task is interrupted.
 Calling `get` on a cancelled future
-results in a `CancellationException`.
+results in a
+[CancellationException](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CancellationException.html).
 
 ## Task: Write more tests
 
-Study the documentation for `ExecutorService` and `Future`.
+Study the documentation for
+[ExecutorService](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ExecutorService.html)
+and
+[Future](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Future.html).
 Write more tests that you find interesting.
 Alternatively, write tests documenting the behaviour
-of `ScheduledExecutorServices`.
-The class `Executors` has static methods to create them.
+of
+[ScheduledExecutorService](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html)s.
+The class
+[Executors](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Executors.html)
+has static methods to create them.
 
 ## Rendering with a thread pool
 

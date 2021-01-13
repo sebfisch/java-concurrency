@@ -12,7 +12,9 @@ However, when different tasks consist of different amounts of work
 then that work might still not be distributed evenly
 among available threads in the pool.
 
-The `ForkJoinPool` class provides a mechanism
+The
+[ForkJoinPool](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ForkJoinPool.html)
+class provides a mechanism
 where tasks can be split recursively into sub-tasks.
 Every thread has its own task queue
 and sub-tasks created by a thread are scheduled to run
@@ -44,11 +46,13 @@ We use `ForkJoinPool.commonPool` again to access
 an `ExecutorService` that is actually an instance
 of the `ForkJoinPool` class.
 As argument to `submit`,
-`ForkJoinPool` instances allow `ForkJoinTask`s
+`ForkJoinPool` instances allow
+[ForkJoinTask](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ForkJoinTask.html)s
 which are usually created by subclassing one of two
 provided classes.
 Here is our definition of the `Fib` class
-as a subclass of `RecursiveTask`.
+as a subclass of
+[RecursiveTask](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/RecursiveTask.html).
 
 ```java
 class Fib extends RecursiveTask<Integer> {
@@ -135,7 +139,8 @@ void testCancellingARecursiveAction() {
 Unlike the presious test,
 this one does not use `ForkJoinPool.commonPool`
 for a reason discussed below.
-This time, we submit a `RecursiveAction`
+This time, we submit a
+[RecursiveAction](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/RecursiveAction.html)
 which differs from a `RecursiveTask`
 by the result type `void` of the `compute` method.
 
@@ -265,3 +270,4 @@ Pass the calling thread when constructing the actions,
 so it can be passed to calls to `render` in the base case.
 Can the rendering process still be aborted successfully
 after your changes?
+

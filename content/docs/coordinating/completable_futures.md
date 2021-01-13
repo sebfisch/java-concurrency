@@ -5,7 +5,8 @@ weight: 460
 
 # Completable Futures
 
-Completable futures extend futures with numerous methods
+[CompletableFuture](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CompletableFuture.html)s
+extend futures with numerous methods
 to create more complex futures from simpler ones.
 We will discuss selected parts of their API using tests.
 
@@ -50,7 +51,9 @@ void testCompletingFutureManually() {
 
 ## Manipulating futures
 
-The interface `CompletionStage` implemented by completable futures
+The interface
+[CompletionStage](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CompletionStage.html)
+implemented by completable futures
 defines many operations for manipulating completable futures.
 We only show two methods here, one that is like `map` on streams
 and another that is like `flatMap`.

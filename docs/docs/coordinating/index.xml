@@ -23,7 +23,7 @@ class Count { public int count = 0; } The following test creates two threads tha
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/</guid>
-      <description>Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions in the package java.util.concurrent.locks.
+      <description>Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions.
 Task: Write tests #  Create a new test suite documenting how Locks and Conditions can be used, and compare their behaviour with the classic synchronization primitives around intrinsic locks.
 Coloring grids #  We now discuss a concurrent algorithm that benefits from the more flexible locks provided by modern Java versions. More specifically, we will use multiple locks for fine grained coordination of read and write access to parts of a shared resource.</description>
     </item>
@@ -34,7 +34,7 @@ Coloring grids #  We now discuss a concurrent algorithm that benefits from the m
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/</guid>
-      <description>Completable Futures #  Completable futures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
+      <description>Completable Futures #  CompletableFutures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
 Creating futures #  Completed futures can be created from the value they return.
 void testCreatingCompletedFuture() { final CompletableFuture&amp;lt;Integer&amp;gt; future = // 	CompletableFuture.completedFuture(42); assertEquals(42, future.join()); } Here, the join method is like get but does not throw an InterruptedException. We can use supplyAsync to create a future from an asynchronous computation.</description>
     </item>

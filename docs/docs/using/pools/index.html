@@ -196,6 +196,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -292,23 +310,31 @@ and submits a task for execution.</p>
 </code></pre></div><p>The number of available processors is queried
 and then used to create a thread pool of fixed size.
 The <code>submit</code> method is used to pass an anonymous
-instance of <code>Callable</code> to be executed by a thread in the pool.
-The result of <code>submit</code> is an instance of <code>Future</code>
+instance of
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a>
+to be executed by a thread in the pool.
+The result of <code>submit</code> is an instance of
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Future.html">Future</a>
 that can be used to check if the task is completed using <code>isDone</code>
 and to query the task result using <code>get</code>.</p>
 <p>The <code>get</code> method blocks until the task is completed
 similar to the <code>join</code> method for threads.
 It throws an <code>InterruptedException</code> if the thread
 executing the task is interrupted
-and an <code>ExecutionException</code> if the task throws an exception.
+and an
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ExecutionException.html">ExecutionException</a>
+if the task throws an exception.
 There is another variant of <code>get</code>
 that accepts a time limit as argument
-and throws a <code>TimeoutException</code>
+and throws a
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/TimeoutException.html">TimeoutException</a>
 if the task does not finish before the given limit.</p>
 <p>Thread pools can be terminated with the <code>shutdown</code> method.
 After calling <code>shutdown</code>, the pool does not accept
 more tasks to be submitted
-(throwing a <code>RejectedExecutionException</code> instead)
+(throwing a
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/RejectedExecutionException.html">RejectedExecutionException</a>
+instead)
 but continues to execute running tasks.
 There is a variant <code>shutdownNow</code> that attempts
 to stop executing tasks and returns a list of waiting tasks.</p>
@@ -356,16 +382,23 @@ before calling <code>cancel</code> on the returned future.
 The <code>cancel</code> method accepts a boolean argument.
 If it is <code>true</code>, the thread executing the task is interrupted.
 Calling <code>get</code> on a cancelled future
-results in a <code>CancellationException</code>.</p>
+results in a
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CancellationException.html">CancellationException</a>.</p>
 <h2 id="task-write-more-tests">
   Task: Write more tests
   <a class="anchor" href="#task-write-more-tests">#</a>
 </h2>
-<p>Study the documentation for <code>ExecutorService</code> and <code>Future</code>.
+<p>Study the documentation for
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ExecutorService.html">ExecutorService</a>
+and
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Future.html">Future</a>.
 Write more tests that you find interesting.
 Alternatively, write tests documenting the behaviour
-of <code>ScheduledExecutorServices</code>.
-The class <code>Executors</code> has static methods to create them.</p>
+of
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a>s.
+The class
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/Executors.html">Executors</a>
+has static methods to create them.</p>
 <h2 id="rendering-with-a-thread-pool">
   Rendering with a thread pool
   <a class="anchor" href="#rendering-with-a-thread-pool">#</a>

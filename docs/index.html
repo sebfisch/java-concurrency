@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Parallelism and Concurrency in Java #  Computers can do many things at the same time. Operating systems run multiple programs simultaneously, so we can listen to music while browsing the web. A text editing program might search through one file while we edit another. Computers can also do the same thing on many processors. Image manipulation software often uses multiple cores when applying costly operations to large images.
-Parallelism and concurreny are related but separate concepts.">
+Parallelism and concurrency are related but separate concepts.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Parallelism and Concurrency in Java" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
@@ -194,6 +194,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -264,7 +282,7 @@ while we edit another.
 Computers can also do the same thing on many processors.
 Image manipulation software often uses multiple cores
 when applying costly operations to large images.</p>
-<p>Parallelism and concurreny are related but separate concepts.
+<p>Parallelism and concurrency are related but separate concepts.
 Parallelism is about how a program is executed,
 concurrency is about how a program is written.
 In traditional programming languages like Java,
@@ -311,7 +329,8 @@ and
 <a href="docs/coordinating/">coordinating</a>
 threads in Java.
 First, we will compare different ways of using threads
-in a program for rendering images of the Mandelbrot fractal.
+in a program for rendering images of the
+<a href="https://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot fractal</a>.
 The rendering of such images is costly and can benefit from
 parallel execution.
 Later, we will discuss how to coordinate different threads

@@ -5,11 +5,11 @@
   <meta name="generator" content="Hugo 0.79.1" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Completable Futures #  Completable futures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
+<meta name="description" content="Completable Futures #  CompletableFutures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
 Creating futures #  Completed futures can be created from the value they return.
 void testCreatingCompletedFuture() { final CompletableFuture&lt;Integer&gt; future = // 	CompletableFuture.completedFuture(42); assertEquals(42, future.join()); } Here, the join method is like get but does not throw an InterruptedException. We can use supplyAsync to create a future from an asynchronous computation.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Completable Futures" />
-<meta property="og:description" content="Completable Futures #  Completable futures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
+<meta property="og:description" content="Completable Futures #  CompletableFutures extend futures with numerous methods to create more complex futures from simpler ones. We will discuss selected parts of their API using tests.
 Creating futures #  Completed futures can be created from the value they return.
 void testCreatingCompletedFuture() { final CompletableFuture&lt;Integer&gt; future = // 	CompletableFuture.completedFuture(42); assertEquals(42, future.join()); } Here, the join method is like get but does not throw an InterruptedException. We can use supplyAsync to create a future from an asynchronous computation." />
 <meta property="og:type" content="article" />
@@ -196,6 +196,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -264,7 +282,8 @@ https://github.com/alex-shpak/hugo-book
   Completable Futures
   <a class="anchor" href="#completable-futures">#</a>
 </h1>
-<p>Completable futures extend futures with numerous methods
+<p><a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>s
+extend futures with numerous methods
 to create more complex futures from simpler ones.
 We will discuss selected parts of their API using tests.</p>
 <h2 id="creating-futures">
@@ -300,7 +319,9 @@ to call <code>complete</code> from an arbitrary thread.</p>
   Manipulating futures
   <a class="anchor" href="#manipulating-futures">#</a>
 </h2>
-<p>The interface <code>CompletionStage</code> implemented by completable futures
+<p>The interface
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CompletionStage.html">CompletionStage</a>
+implemented by completable futures
 defines many operations for manipulating completable futures.
 We only show two methods here, one that is like <code>map</code> on streams
 and another that is like <code>flatMap</code>.</p>

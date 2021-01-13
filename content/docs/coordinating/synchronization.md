@@ -13,7 +13,8 @@ that have been provided in Java from the beginning.
 Before discussing synchronization,
 we look at what can happen if different threads lack coordination.
 We will use a shared mutable object of the following class
-to demonstrate thread interference.
+to demonstrate
+[thread interference](https://docs.oracle.com/javase/tutorial/essential/concurrency/interfere.html).
 
 ```java
 class Count {
@@ -165,7 +166,7 @@ void testIntrinsicLockRelease() {
 }
 ```
 
-The sonsumer waits as long as the count value is zero,
+The consumer waits as long as the count value is zero,
 and the producer waits as long as it is non-zero.
 Regardless of which thread enters the synchronized block first,
 the producer will be the first to exit its waiting loop,

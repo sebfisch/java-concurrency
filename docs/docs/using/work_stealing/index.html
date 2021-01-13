@@ -194,6 +194,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -268,7 +286,9 @@ render parts of an image.
 However, when different tasks consist of different amounts of work
 then that work might still not be distributed evenly
 among available threads in the pool.</p>
-<p>The <code>ForkJoinPool</code> class provides a mechanism
+<p>The
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ForkJoinPool.html">ForkJoinPool</a>
+class provides a mechanism
 where tasks can be split recursively into sub-tasks.
 Every thread has its own task queue
 and sub-tasks created by a thread are scheduled to run
@@ -296,11 +316,13 @@ a fibonacci number.</p>
 an <code>ExecutorService</code> that is actually an instance
 of the <code>ForkJoinPool</code> class.
 As argument to <code>submit</code>,
-<code>ForkJoinPool</code> instances allow <code>ForkJoinTask</code>s
+<code>ForkJoinPool</code> instances allow
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/ForkJoinTask.html">ForkJoinTask</a>s
 which are usually created by subclassing one of two
 provided classes.
 Here is our definition of the <code>Fib</code> class
-as a subclass of <code>RecursiveTask</code>.</p>
+as a subclass of
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/RecursiveTask.html">RecursiveTask</a>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Fib</span> <span style="color:#66d9ef">extends</span> RecursiveTask<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> n<span style="color:#f92672">;</span>
 
@@ -377,7 +399,8 @@ is ignored by <code>ForkJoinTask</code>s as the following test demonstrates.</p>
 </code></pre></div><p>Unlike the presious test,
 this one does not use <code>ForkJoinPool.commonPool</code>
 for a reason discussed below.
-This time, we submit a <code>RecursiveAction</code>
+This time, we submit a
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/RecursiveAction.html">RecursiveAction</a>
 which differs from a <code>RecursiveTask</code>
 by the result type <code>void</code> of the <code>compute</code> method.</p>
 <p>After giving the pool some time to start executing the task

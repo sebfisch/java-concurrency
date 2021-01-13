@@ -13,7 +13,7 @@ Computers can also do the same thing on many processors.
 Image manipulation software often uses multiple cores
 when applying costly operations to large images.
 
-Parallelism and concurreny are related but separate concepts.
+Parallelism and concurrency are related but separate concepts.
 Parallelism is about how a program is executed,
 concurrency is about how a program is written.
 In traditional programming languages like Java,
@@ -64,7 +64,8 @@ and
 [coordinating](docs/coordinating/)
 threads in Java.
 First, we will compare different ways of using threads
-in a program for rendering images of the Mandelbrot fractal.
+in a program for rendering images of the
+[Mandelbrot fractal](https://en.wikipedia.org/wiki/Mandelbrot_set).
 The rendering of such images is costly and can benefit from
 parallel execution.
 Later, we will discuss how to coordinate different threads

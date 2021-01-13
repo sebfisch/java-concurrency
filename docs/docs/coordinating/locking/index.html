@@ -5,11 +5,11 @@
   <meta name="generator" content="Hugo 0.79.1" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions in the package java.util.concurrent.locks.
+<meta name="description" content="Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions.
 Task: Write tests #  Create a new test suite documenting how Locks and Conditions can be used, and compare their behaviour with the classic synchronization primitives around intrinsic locks.
 Coloring grids #  We now discuss a concurrent algorithm that benefits from the more flexible locks provided by modern Java versions. More specifically, we will use multiple locks for fine grained coordination of read and write access to parts of a shared resource.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Flexible Locking" />
-<meta property="og:description" content="Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions in the package java.util.concurrent.locks.
+<meta property="og:description" content="Flexible Locking #  Modern versions of Java provide classes for Locks and Conditions.
 Task: Write tests #  Create a new test suite documenting how Locks and Conditions can be used, and compare their behaviour with the classic synchronization primitives around intrinsic locks.
 Coloring grids #  We now discuss a concurrent algorithm that benefits from the more flexible locks provided by modern Java versions. More specifically, we will use multiple locks for fine grained coordination of read and write access to parts of a shared resource." />
 <meta property="og:type" content="article" />
@@ -196,6 +196,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -268,8 +286,10 @@ https://github.com/alex-shpak/hugo-book
   Flexible Locking
   <a class="anchor" href="#flexible-locking">#</a>
 </h1>
-<p>Modern versions of Java provide classes for <code>Lock</code>s and <code>Condition</code>s
-in the package <code>java.util.concurrent.locks</code>.</p>
+<p>Modern versions of Java provide classes for
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/locks/Lock.html">Lock</a>s
+and
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/locks/Condition.html">Condition</a>s.</p>
 <h2 id="task-write-tests">
   Task: Write tests
   <a class="anchor" href="#task-write-tests">#</a>
@@ -398,7 +418,8 @@ simultaneously, as long as that cell does not currently attempt
 to pick a new color for itself.
 This pattern of allowing simultaneous read access as long as there
 is no write access is very common.
-It is supported in Java via <code>ReadWriteLock</code>s.</p>
+It is supported in Java via
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/locks/ReadWriteLock.html">ReadWriteLock</a>s.</p>
 <p>We can now discuss the implementation
 of our concurrent algorithm for grid coloring.
 We do not use the common <code>ForkJoinPool</code>
@@ -456,7 +477,8 @@ and no task can take a write lock.
 As a consequence, all tasks block each other
 waiting for a write lock corresponding to a read lock
 taken by another task.</p>
-<p>Deadlock occurs if two threads try to take the same locks
+<p><a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html">Deadlock</a>
+occurs if two threads try to take the same locks
 in a different order.
 A common strategy to avoid deadlock is to always take locks
 in the same order.

@@ -196,6 +196,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -272,7 +290,9 @@ we write tests to get comfortable using their API.</p>
   Testing the API
   <a class="anchor" href="#testing-the-api">#</a>
 </h2>
-<p>In Java, threads are instances of the <code>Thread</code> class.
+<p>In Java, threads are instances of the
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Thread.html">Thread</a>
+class.
 The following test shows how to start two threads
 and wait for them to be finished.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testHowToStartAndJoinThreads</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
@@ -302,9 +322,11 @@ and wait for them to be finished.</p>
 
     assertEquals<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> results<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><p>Threads can be created by passing a <code>Runnable</code> instance to the constructor.
+</code></pre></div><p>Threads can be created by passing a
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Runnable.html">Runnable</a>
+instance to the constructor.
 Here, we use
-lambda expressions
+<a href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">lambda expressions</a>
 to create corresponding <code>Runnable</code> instances concisely.</p>
 <p>The method <code>isAlive</code> returns <code>true</code> when called on a thread
 that has been started but not yet completed execution.
@@ -329,7 +351,8 @@ At this point we can also be sure
 that both threads have written to the list of results.
 We cannot predict the order of elements in the <code>results</code> list
 which is non-deterministic and depends on the order of execution.</p>
-<p>Blocking operations usually throw an <code>InterruptedException</code>
+<p>Blocking operations usually throw an
+<a href="https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/InterruptedException.html">InterruptedException</a>
 when the calling thread is interrupted (more on that below.)
 In this test, we do not expect the calling thread to be interrupted,
 so we ignore the exception.</p>

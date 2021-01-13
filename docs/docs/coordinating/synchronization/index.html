@@ -196,6 +196,24 @@ https://github.com/alex-shpak/hugo-book
         </li>
       
     
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
   </ul>
 
 
@@ -273,7 +291,8 @@ that have been provided in Java from the beginning.</p>
 <p>Before discussing synchronization,
 we look at what can happen if different threads lack coordination.
 We will use a shared mutable object of the following class
-to demonstrate thread interference.</p>
+to demonstrate
+<a href="https://docs.oracle.com/javase/tutorial/essential/concurrency/interfere.html">thread interference</a>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Count</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> count <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
 <span style="color:#f92672">}</span>
@@ -405,7 +424,7 @@ and notify each other.</p>
 
     assertTrue<span style="color:#f92672">(</span>IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">generate</span><span style="color:#f92672">(</span>handshake<span style="color:#f92672">).</span><span style="color:#a6e22e">limit</span><span style="color:#f92672">(</span>100<span style="color:#f92672">).</span><span style="color:#a6e22e">allMatch</span><span style="color:#f92672">(</span>n <span style="color:#f92672">-&gt;</span> n <span style="color:#f92672">==</span> 0<span style="color:#f92672">));</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><p>The sonsumer waits as long as the count value is zero,
+</code></pre></div><p>The consumer waits as long as the count value is zero,
 and the producer waits as long as it is non-zero.
 Regardless of which thread enters the synchronized block first,
 the producer will be the first to exit its waiting loop,

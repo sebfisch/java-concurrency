@@ -10,7 +10,9 @@ we write tests to get comfortable using their API.
 
 ## Testing the API
 
-In Java, threads are instances of the `Thread` class.
+In Java, threads are instances of the
+[Thread](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Thread.html)
+class.
 The following test shows how to start two threads
 and wait for them to be finished.
 
@@ -44,9 +46,11 @@ void testHowToStartAndJoinThreads() {
 }
 ```
 
-Threads can be created by passing a `Runnable` instance to the constructor.
+Threads can be created by passing a 
+[Runnable](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/Runnable.html)
+instance to the constructor.
 Here, we use
-lambda expressions
+[lambda expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html)
 to create corresponding `Runnable` instances concisely.
 
 The method `isAlive` returns `true` when called on a thread
@@ -74,7 +78,8 @@ that both threads have written to the list of results.
 We cannot predict the order of elements in the `results` list
 which is non-deterministic and depends on the order of execution.
 
-Blocking operations usually throw an `InterruptedException`
+Blocking operations usually throw an 
+[InterruptedException](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/InterruptedException.html)
 when the calling thread is interrupted (more on that below.)
 In this test, we do not expect the calling thread to be interrupted,
 so we ignore the exception.

@@ -5,8 +5,10 @@ weight: 440
 
 # Flexible Locking
 
-Modern versions of Java provide classes for `Lock`s and `Condition`s
-in the package `java.util.concurrent.locks`.
+Modern versions of Java provide classes for
+[Lock](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/locks/Lock.html)s
+and
+[Condition](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/locks/Condition.html)s.
 
 ## Task: Write tests
 
@@ -146,7 +148,8 @@ simultaneously, as long as that cell does not currently attempt
 to pick a new color for itself.
 This pattern of allowing simultaneous read access as long as there
 is no write access is very common.
-It is supported in Java via `ReadWriteLock`s.
+It is supported in Java via
+[ReadWriteLock](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/locks/ReadWriteLock.html)s.
 
 We can now discuss the implementation 
 of our concurrent algorithm for grid coloring.
@@ -216,7 +219,8 @@ As a consequence, all tasks block each other
 waiting for a write lock corresponding to a read lock
 taken by another task.
 
-Deadlock occurs if two threads try to take the same locks
+[Deadlock](https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html)
+occurs if two threads try to take the same locks
 in a different order.
 A common strategy to avoid deadlock is to always take locks
 in the same order.
