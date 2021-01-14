@@ -409,14 +409,17 @@ with more parts than available processors.
 Here is the <code>render</code> method
 of the <code>ThreadPoolRenderer</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">return</span> join<span style="color:#f92672">(</span>fork<span style="color:#f92672">(</span>ForkJoinPool<span style="color:#f92672">.</span><span style="color:#a6e22e">commonPool</span><span style="color:#f92672">(),</span> pixels<span style="color:#f92672">));</span>
+    <span style="color:#66d9ef">final</span> InterruptFlag self <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> InterruptFlag<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">return</span> join<span style="color:#f92672">(</span>fork<span style="color:#f92672">(</span>ForkJoinPool<span style="color:#f92672">.</span><span style="color:#a6e22e">commonPool</span><span style="color:#f92672">(),</span> pixels<span style="color:#f92672">,</span> self<span style="color:#f92672">),</span> self<span style="color:#f92672">);</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>We use <code>ForkJoinPool.commonPool</code> to access a thread pool
 that is configured to run many non-blocking tasks
 optimized for the available processors.
-Here is the implementation of the <code>fork</code> method.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> fork<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ExecutorService pool<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    Thread origin <span style="color:#f92672">=</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">();</span>
+We also instantiate an <code>InterruptFlag</code> (discussed below)
+nd pass it it to the <code>fork</code> and <code>join</code> methods.
+Here is the implementation of <code>fork</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> fork<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ExecutorService pool<span style="color:#f92672">,</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Interruptible origin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">return</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">split</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>part <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">(</span>Runnable<span style="color:#f92672">)</span> <span style="color:#f92672">()</span> <span style="color:#f92672">-&gt;</span> renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>part<span style="color:#f92672">,</span> origin<span style="color:#f92672">))</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>pool<span style="color:#f92672">::</span>submit<span style="color:#f92672">)</span> <span style="color:#75715e">//
@@ -425,23 +428,30 @@ Here is the implementation of the <code>fork</code> method.</p>
 </code></pre></div><p>It returns a list of futures
 corresponding to rendering tasks
 using an underlying <code>StreamRenderer</code>
-that is passed a reference to the calling thread
+that is passed a reference to the interrupt flag
 to be tested for interruptions.</p>
 <p>The <code>join</code> method waits for the tasks to complete
 by calling <code>get</code> on the corresponding futures.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">join</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> futures<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">join</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> futures<span style="color:#f92672">,</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> InterruptFlag self<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">return</span> futures<span style="color:#f92672">.</span><span style="color:#a6e22e">stream</span><span style="color:#f92672">().</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>future <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
         <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
             future<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
             <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
         <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException <span style="color:#f92672">|</span> ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            self<span style="color:#f92672">.</span><span style="color:#a6e22e">wasInterrupted</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
             <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
         <span style="color:#f92672">}</span>
     <span style="color:#f92672">}).</span><span style="color:#a6e22e">allMatch</span><span style="color:#f92672">(</span>ok <span style="color:#f92672">-&gt;</span> ok<span style="color:#f92672">);</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>The result of <code>join</code> signifies
 whether the calling thread waited successfully for all tasks
-without being interrupted.</p>
+without being interrupted.
+If the calling thread is interrupted,
+it changes the interrupt flag passed as second argument.
+We use our own interrupt flag,
+because the one associated with threads in Java might be reset,
+which could lead to started threads not being able to notice the interruption.</p>
 <p>The following picture has been created using the <code>ThreadPoolRenderer</code>.</p>
 <p><img src="../pool.png" alt="Part of the Mandelbrot fractal" /></p>
 <p>This time parts colored with the same hue

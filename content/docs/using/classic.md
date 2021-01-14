@@ -179,10 +179,11 @@ public class StreamRenderer extends AbstractRenderer {
 
     @Override
     public boolean render(final Box pixels) {
-        return render(pixels, Thread.currentThread());
+        final Thread origin = Thread.currentThread();
+        return render(pixels, origin::isInterrupted);
     }
 
-    public boolean render(final Box pixels, final Thread origin) {
+    public boolean render(final Box pixels, final Interruptible origin) {
         if (image == null || params == null || raster == null) {
             return false;
         }
@@ -192,7 +193,7 @@ public class StreamRenderer extends AbstractRenderer {
         final int w = pixels.size.x;
         
         IntStream.range(0, w * pixels.size.y).forEach(index -> {
-            if (!origin.isInterrupted()) {
+            if (!origin.wasInterrupted()) {
                 final Pixel pixel = //
                     new Pixel(index % w, index / w).plus(pixels.min);
                 final Point point = params.pointAt(pixel, width, height);
@@ -200,7 +201,7 @@ public class StreamRenderer extends AbstractRenderer {
             }
         });
         
-        return !origin.isInterrupted();
+        return !origin.wasInterrupted();
     }
 }
 ```
@@ -218,6 +219,12 @@ The `render` method is parameterized with a `Box`
 which determines which pixels of the `raster` should be rendered.
 This will be useful later, when rendering different parts
 of the picture with different threads.
+
+The second parameter of the `render` method is an instance of `Interruptible`,
+which is a functional interface we defined ourselves
+that has one method `wasInterrupted`.
+If no `Interruptible` instance if provided,
+the `isInterrupted` method of the current thread is used as default.
 
 What's interesting about this renderer is that it
 

@@ -144,18 +144,21 @@ of the `ThreadPoolRenderer`.
 
 ```java
 public boolean render(final Box pixels) {
-    return join(fork(ForkJoinPool.commonPool(), pixels));
+    final InterruptFlag self = new InterruptFlag();
+    return join(fork(ForkJoinPool.commonPool(), pixels, self), self);
 }
 ```
 
 We use `ForkJoinPool.commonPool` to access a thread pool
 that is configured to run many non-blocking tasks
 optimized for the available processors.
-Here is the implementation of the `fork` method.
+We also instantiate an `InterruptFlag` (discussed below)
+nd pass it it to the `fork` and `join` methods.
+Here is the implementation of `fork`.
 
 ```java
-private List<Future<?>> fork(final ExecutorService pool, final Box pixels) {
-    Thread origin = Thread.currentThread();
+private List<Future<?>> fork(final ExecutorService pool, //
+        final Box pixels, final Interruptible origin) {
     return pixels.split() //
         .map(part -> (Runnable) () -> renderer.render(part, origin)) //
         .map(pool::submit) //
@@ -166,19 +169,21 @@ private List<Future<?>> fork(final ExecutorService pool, final Box pixels) {
 It returns a list of futures
 corresponding to rendering tasks
 using an underlying `StreamRenderer`
-that is passed a reference to the calling thread
+that is passed a reference to the interrupt flag
 to be tested for interruptions.
 
 The `join` method waits for the tasks to complete
 by calling `get` on the corresponding futures.
 
 ```java
-private boolean join(final List<Future<?>> futures) {
+private boolean join(final List<Future<?>> futures, //
+        final InterruptFlag self) {
     return futures.stream().map(future -> {
         try {
             future.get();
             return true;
         } catch (InterruptedException | ExecutionException e) {
+            self.wasInterrupted(true);
             return false;
         }
     }).allMatch(ok -> ok);
@@ -188,6 +193,11 @@ private boolean join(final List<Future<?>> futures) {
 The result of `join` signifies
 whether the calling thread waited successfully for all tasks
 without being interrupted.
+If the calling thread is interrupted,
+it changes the interrupt flag passed as second argument.
+We use our own interrupt flag,
+because the one associated with threads in Java might be reset,
+which could lead to started threads not being able to notice the interruption.
 
 The following picture has been created using the `ThreadPoolRenderer`.
 

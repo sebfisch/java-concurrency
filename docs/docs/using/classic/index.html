@@ -441,10 +441,11 @@ which uses stream programming to go through all pixels.</p>
 
     <span style="color:#a6e22e">@Override</span>
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">return</span> render<span style="color:#f92672">(</span>pixels<span style="color:#f92672">,</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">());</span>
+        <span style="color:#66d9ef">final</span> Thread origin <span style="color:#f92672">=</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">return</span> render<span style="color:#f92672">(</span>pixels<span style="color:#f92672">,</span> origin<span style="color:#f92672">::</span>isInterrupted<span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Thread origin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Interruptible origin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>image <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> params <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> raster <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
             <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
         <span style="color:#f92672">}</span>
@@ -454,7 +455,7 @@ which uses stream programming to go through all pixels.</p>
         <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> w <span style="color:#f92672">=</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">x</span><span style="color:#f92672">;</span>
         
         IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> w <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span><span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">wasInterrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
                 <span style="color:#66d9ef">final</span> Pixel pixel <span style="color:#f92672">=</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">new</span> Pixel<span style="color:#f92672">(</span>index <span style="color:#f92672">%</span> w<span style="color:#f92672">,</span> index <span style="color:#f92672">/</span> w<span style="color:#f92672">).</span><span style="color:#a6e22e">plus</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">min</span><span style="color:#f92672">);</span>
                 <span style="color:#66d9ef">final</span> Point point <span style="color:#f92672">=</span> params<span style="color:#f92672">.</span><span style="color:#a6e22e">pointAt</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">,</span> width<span style="color:#f92672">,</span> height<span style="color:#f92672">);</span>
@@ -462,7 +463,7 @@ which uses stream programming to go through all pixels.</p>
             <span style="color:#f92672">}</span>
         <span style="color:#f92672">});</span>
         
-        <span style="color:#66d9ef">return</span> <span style="color:#f92672">!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">isInterrupted</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">wasInterrupted</span><span style="color:#f92672">();</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>Renderers have access to</p>
@@ -477,6 +478,11 @@ which changes to which points pixels correspond.</p>
 which determines which pixels of the <code>raster</code> should be rendered.
 This will be useful later, when rendering different parts
 of the picture with different threads.</p>
+<p>The second parameter of the <code>render</code> method is an instance of <code>Interruptible</code>,
+which is a functional interface we defined ourselves
+that has one method <code>wasInterrupted</code>.
+If no <code>Interruptible</code> instance if provided,
+the <code>isInterrupted</code> method of the current thread is used as default.</p>
 <p>What&rsquo;s interesting about this renderer is that it</p>
 <ul>
 <li>computes all pixels sequentially</li>
