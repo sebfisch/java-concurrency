@@ -10,7 +10,7 @@
 <meta property="og:description" content="Throttling Tasks #  Finally, we look at a class used by the grid coloring application that is useful in other contexts too. To implement the animation, the coloring algorithm notifies the image canvas to rerender the image when colors in the grid change. However, when too many notifications arrive in a short time the user interface thread becomes unresponsive. To avoid overloading the user interface thread with notifications we use a class for throttling tasks represented as Runnable instances." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" />
-<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<meta property="article:modified_time" content="2021-01-13T22:27:32+01:00" />
 <title>Throttling Tasks | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
@@ -281,7 +281,7 @@ However, when too many notifications arrive in a short time
 the user interface thread becomes unresponsive.
 To avoid overloading the user interface thread with notifications
 we use a class for throttling tasks represented as <code>Runnable</code> instances.
-Throtlling is implemented by delaying executed tasks and ignoring
+Throttling is implemented by delaying executed tasks and ignoring
 subsequent executions until the delay is over.</p>
 <p>The <code>ColoringApp</code> uses the following line
 to register a throttled rendering task

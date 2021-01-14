@@ -14,7 +14,7 @@ Testing the API #  In Java, threads are instances of the Thread class. The follo
 void testHowToStartAndJoinThreads() { final List&lt;Integer&gt; results = new ArrayList&lt;&gt;(); final Thread one = new Thread(() -&gt; results.add(1)); final Thread two = new Thread(() -&gt; results." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/classic/" />
-<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<meta property="article:modified_time" content="2021-01-13T19:03:48+01:00" />
 <title>Classic Interface | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
@@ -400,7 +400,7 @@ should test for interruptions themselves.</p>
 <p>Maybe surprisingly, the interrupt status flag may sometimes be cleared.
 By convention, operations that throw an <code>InterruptedException</code>
 clear the flag, and so does <code>Thread.interrupted</code>.
-Ae a result, checking the flag for a second time
+As a result, checking the flag for a second time
 might not yield the same result as the first time.
 In our test, the flag will be cleared
 (either by <code>sleep</code> or by <code>Thread.interrupted</code>)

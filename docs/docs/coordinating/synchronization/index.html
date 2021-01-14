@@ -14,7 +14,7 @@ Thread Interference #  Before discussing synchronization, we look at what can ha
 class Count { public int count = 0; } The following test creates two threads that manipulate a Count instance." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" />
-<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<meta property="article:modified_time" content="2021-01-13T22:13:32+01:00" />
 <title>Classic Synchronization | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
@@ -379,7 +379,7 @@ Interested readers are encouraged to look for the
 <p>Locks are released when a thread exits a synchronized block.
 Alternatively, threads can release a lock they are holding
 by calling <code>wait</code> on the corresponding object.
-The <code>wait</code> methods blocks until another thread notifies
+The <code>wait</code> method blocks until another thread notifies
 waiting threads, usually with <code>notifyAll</code>.
 The following test demonstrates how threads can wait for
 and notify each other.</p>

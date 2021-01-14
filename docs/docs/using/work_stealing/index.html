@@ -12,7 +12,7 @@ The ForkJoinPool class provides a mechanism where tasks can be split recursively
 The ForkJoinPool class provides a mechanism where tasks can be split recursively into sub-tasks. Every thread has its own task queue and sub-tasks created by a thread are scheduled to run on its own queue." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" />
-<meta property="article:modified_time" content="2021-01-13T08:29:45+01:00" />
+<meta property="article:modified_time" content="2021-01-13T19:42:17+01:00" />
 <title>Work Stealing | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
@@ -309,7 +309,7 @@ a fibonacci number.</p>
     <span style="color:#66d9ef">final</span> Future<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> fib10 <span style="color:#f92672">=</span> pool<span style="color:#f92672">.</span><span style="color:#a6e22e">submit</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Fib<span style="color:#f92672">(</span>10<span style="color:#f92672">));</span>
 
     <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
-        assertEquals<span style="color:#f92672">(</span>fib10<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">(),</span> 55<span style="color:#f92672">);</span>
+        assertEquals<span style="color:#f92672">(</span>55<span style="color:#f92672">,</span> fib10<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">());</span>
     <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException <span style="color:#f92672">|</span> ExecutionException e<span style="color:#f92672">)</span> <span style="color:#f92672">{}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>We use <code>ForkJoinPool.commonPool</code> again to access
@@ -346,7 +346,7 @@ as a subclass of
 schedules the first using the <code>fork</code> method,
 executes the second directly,
 and then combines the results,
-possibly waiting for the result of the first tasks
+possibly waiting for the result of the first task
 using the <code>join</code> method.
 The <code>join</code> method is like <code>get</code>
 (<code>ForkJoinTasks</code> are actually futures)
