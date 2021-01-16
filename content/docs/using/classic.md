@@ -223,7 +223,7 @@ of the picture with different threads.
 The second parameter of the `render` method is an instance of `Interruptible`,
 which is a functional interface we defined ourselves
 that has one method `wasInterrupted`.
-If no `Interruptible` instance if provided,
+If no `Interruptible` instance is provided,
 the `isInterrupted` method of the current thread is used as default.
 
 What's interesting about this renderer is that it
