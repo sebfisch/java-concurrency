@@ -153,7 +153,7 @@ We use `ForkJoinPool.commonPool` to access a thread pool
 that is configured to run many non-blocking tasks
 optimized for the available processors.
 We also instantiate an `InterruptFlag` (discussed below)
-nd pass it it to the `fork` and `join` methods.
+and pass it to the `fork` and `join` methods.
 Here is the implementation of `fork`.
 
 ```java
