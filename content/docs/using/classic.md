@@ -323,7 +323,7 @@ and check if renderers of different types really are aborted.
 The `StreamRenderer` class provides an alternative `render` method
 that takes a thread as argument to check for interruptions.
 Change the `MultiThreadedRenderer` to use this method
-passing the thread of the original `render` call.
+passing a custom `Interruptible` instance.
 Simplify the `join` method to call `join` on each started thread
 without passing on interruptions.
 Can the `MultiThreadedRenderer` still be aborted successfully
