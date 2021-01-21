@@ -184,20 +184,16 @@ public class StreamRenderer extends AbstractRenderer {
     }
 
     public boolean render(final Box pixels, final Interruptible origin) {
-        if (image == null || params == null || raster == null) {
+        if (image == null || raster == null) {
             return false;
         }
 
-        final int width = raster.getWidth();
-        final int height = raster.getHeight();
         final int w = pixels.size.x;
-        
         IntStream.range(0, w * pixels.size.y).forEach(index -> {
             if (!origin.wasInterrupted()) {
                 final Pixel pixel = //
                     new Pixel(index % w, index / w).plus(pixels.min);
-                final Point point = params.pointAt(pixel, width, height);
-                raster.setPixelColor(pixel, image.colorAt(point));
+                raster.setPixelColor(pixel, image.colorAt(pixel));
             }
         });
         
@@ -208,12 +204,8 @@ public class StreamRenderer extends AbstractRenderer {
 
 Renderers have access to
 
-  * an `image` that determines the color of points
-  * image `params` that transform between pixel and point coordinate systems
-  * and a pixel `raster` where pixels can be written to.
-
-The image `params` are useful for zooming into arbitrary parts of a fractal
-which changes to which points pixels correspond.
+  * an `image` that determines the color of pixels
+  * and a pixel `raster` where pixel colors can be written to.
 
 The `render` method is parameterized with a `Box`
 which determines which pixels of the `raster` should be rendered.
