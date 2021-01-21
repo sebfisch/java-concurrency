@@ -41,7 +41,7 @@ In order for us to be able to see all neighbors of each cell,
 the last row and column repeats the first.
 When looking at the (top-left) 4x4 grid closely,
 we can see that the cells all have different colors
-(although, admittedly, the four shades of green look very similar.)
+(although, admittedly, some of them look very similar.)
 
 When clicking in the grid,
 the application shows an animation choosing different colors
@@ -78,14 +78,12 @@ starting at the cell with the given coordinates.
 
 ```java
 public void pickNewColor(int row, int col) {
-    final Set<Float> neighborHues = grid.neighborIndices(row, col) //
-        .map(grid::getCell) //
-        .map(ColoredLock::getHue) //
-        .collect(Collectors.toSet());
+    final Set<Float> neighborHues = grid.neighborHues(row, col);
     final float newHue = grid.palette() //
-        .filter(hue -> !neighborHues.contains(hue))
+        .filter(hue -> !neighborHues.contains(hue)) //
         .findFirst() //
         .orElseThrow();
+    
     if (grid.getCell(row, col).getHue() != newHue) {
         grid.getCell(row, col).setHue(newHue);
         grid.neighborIndices(row, col).forEach(index -> {
@@ -166,33 +164,29 @@ Here is a first (still problematic) concurrent version of `pickNewColor`.
 ```java
 public void pickNewColor(int row, int col) {
     POOL.execute(() -> {
-        final List<ColoredLock> neighbors = grid.neighborIndices(row, col) //
-            .map(grid::getCell) //
-            .collect(Collectors.toList());
+        final List<ColoredLock> neighbors = grid.neighbors(row, col);
         final List<ColoredLock> locked = new ArrayList<>(neighbors);
         locked.add(grid.getCell(row, col));
         locked.forEach(cell -> {
             cell.lock(cell.index() == grid.index(row, col));
         });
-        final Set<Float> neighborHues = neighbors.stream() //
-            .map(ColoredLock::getHue) //
-            .collect(Collectors.toSet());
-        final float newHue = grid.palette() //
-            .filter(hue -> !neighborHues.contains(hue))
-            .findFirst() //
-            .orElseThrow();
-        if (grid.getCell(row, col).getHue() != newHue) {
-            grid.getCell(row, col).setHue(newHue);
+        try {
+            final Set<Float> neighborHues = grid.neighborHues(row, col);
+            final float newHue = grid.palette() //
+                .filter(hue -> !neighborHues.contains(hue)) //
+                .findFirst() //
+                .orElseThrow();
+            
+            if (grid.getCell(row, col).getHue() != newHue) {
+                grid.getCell(row, col).setHue(newHue);
+                grid.neighborIndices(row, col).forEach(index -> {
+                    pickNewColor(grid.row(index), grid.col(index));
+                });
+            }
+        } finally {
             locked.forEach(cell -> {
                 cell.unlock(cell.index() == grid.index(row, col));
             });
-            grid.neighborIndices(row, col).forEach(index -> {
-                pickNewColor(grid.row(index), grid.col(index));
-            });
-        } else {
-            locked.forEach(cell -> {
-                cell.unlock(cell.index() == grid.index(row, col));
-            });    
         }
     });
 }
@@ -207,6 +201,9 @@ Compared to the previous version, this version includes
 statements for locking and unlocking grid cells.
 The used `lock` and `unlock` methods accept an argument
 signifying whether write access is (or was) required.
+We use a `try-finally` block to make sure
+that the locks a released eventually
+even if an exception occurs.
 
 When executing this algorithm,
 the animation usually freezes.

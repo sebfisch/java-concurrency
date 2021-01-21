@@ -14,7 +14,7 @@ Before implementing a renderer using a thread pool we write tests to learn about
 Testing the API #  The following test creates a thread pool and submits a task for execution." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/pools/" />
-<meta property="article:modified_time" content="2021-01-13T11:00:24+01:00" />
+<meta property="article:modified_time" content="2021-01-17T00:15:16+01:00" />
 <title>Thread Pools | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
@@ -416,7 +416,7 @@ of the <code>ThreadPoolRenderer</code>.</p>
 that is configured to run many non-blocking tasks
 optimized for the available processors.
 We also instantiate an <code>InterruptFlag</code> (discussed below)
-nd pass it it to the <code>fork</code> and <code>join</code> methods.
+and pass it to the <code>fork</code> and <code>join</code> methods.
 Here is the implementation of <code>fork</code>.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> List<span style="color:#f92672">&lt;</span>Future<span style="color:#f92672">&lt;?&gt;&gt;</span> fork<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ExecutorService pool<span style="color:#f92672">,</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Interruptible origin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>

@@ -14,7 +14,7 @@ Testing the API #  In Java, threads are instances of the Thread class. The follo
 void testHowToStartAndJoinThreads() { final List&lt;Integer&gt; results = new ArrayList&lt;&gt;(); final Thread one = new Thread(() -&gt; results.add(1)); final Thread two = new Thread(() -&gt; results." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/classic/" />
-<meta property="article:modified_time" content="2021-01-13T19:03:48+01:00" />
+<meta property="article:modified_time" content="2021-01-21T16:40:06+01:00" />
 <title>Classic Interface | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
@@ -446,20 +446,16 @@ which uses stream programming to go through all pixels.</p>
     <span style="color:#f92672">}</span>
 
     <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Interruptible origin<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>image <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> params <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> raster <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>image <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> raster <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
             <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
         <span style="color:#f92672">}</span>
 
-        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> width <span style="color:#f92672">=</span> raster<span style="color:#f92672">.</span><span style="color:#a6e22e">getWidth</span><span style="color:#f92672">();</span>
-        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> height <span style="color:#f92672">=</span> raster<span style="color:#f92672">.</span><span style="color:#a6e22e">getHeight</span><span style="color:#f92672">();</span>
         <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> w <span style="color:#f92672">=</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">x</span><span style="color:#f92672">;</span>
-        
         IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> w <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span><span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
             <span style="color:#66d9ef">if</span> <span style="color:#f92672">(!</span>origin<span style="color:#f92672">.</span><span style="color:#a6e22e">wasInterrupted</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
                 <span style="color:#66d9ef">final</span> Pixel pixel <span style="color:#f92672">=</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">new</span> Pixel<span style="color:#f92672">(</span>index <span style="color:#f92672">%</span> w<span style="color:#f92672">,</span> index <span style="color:#f92672">/</span> w<span style="color:#f92672">).</span><span style="color:#a6e22e">plus</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">min</span><span style="color:#f92672">);</span>
-                <span style="color:#66d9ef">final</span> Point point <span style="color:#f92672">=</span> params<span style="color:#f92672">.</span><span style="color:#a6e22e">pointAt</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">,</span> width<span style="color:#f92672">,</span> height<span style="color:#f92672">);</span>
-                raster<span style="color:#f92672">.</span><span style="color:#a6e22e">setPixelColor</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">,</span> image<span style="color:#f92672">.</span><span style="color:#a6e22e">colorAt</span><span style="color:#f92672">(</span>point<span style="color:#f92672">));</span>
+                raster<span style="color:#f92672">.</span><span style="color:#a6e22e">setPixelColor</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">,</span> image<span style="color:#f92672">.</span><span style="color:#a6e22e">colorAt</span><span style="color:#f92672">(</span>pixel<span style="color:#f92672">));</span>
             <span style="color:#f92672">}</span>
         <span style="color:#f92672">});</span>
         
@@ -468,12 +464,9 @@ which uses stream programming to go through all pixels.</p>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>Renderers have access to</p>
 <ul>
-<li>an <code>image</code> that determines the color of points</li>
-<li>image <code>params</code> that transform between pixel and point coordinate systems</li>
-<li>and a pixel <code>raster</code> where pixels can be written to.</li>
+<li>an <code>image</code> that determines the color of pixels</li>
+<li>and a pixel <code>raster</code> where pixel colors can be written to.</li>
 </ul>
-<p>The image <code>params</code> are useful for zooming into arbitrary parts of a fractal
-which changes to which points pixels correspond.</p>
 <p>The <code>render</code> method is parameterized with a <code>Box</code>
 which determines which pixels of the <code>raster</code> should be rendered.
 This will be useful later, when rendering different parts
@@ -481,7 +474,7 @@ of the picture with different threads.</p>
 <p>The second parameter of the <code>render</code> method is an instance of <code>Interruptible</code>,
 which is a functional interface we defined ourselves
 that has one method <code>wasInterrupted</code>.
-If no <code>Interruptible</code> instance if provided,
+If no <code>Interruptible</code> instance is provided,
 the <code>isInterrupted</code> method of the current thread is used as default.</p>
 <p>What&rsquo;s interesting about this renderer is that it</p>
 <ul>
@@ -564,7 +557,7 @@ and check if renderers of different types really are aborted.</p>
 <p>The <code>StreamRenderer</code> class provides an alternative <code>render</code> method
 that takes a thread as argument to check for interruptions.
 Change the <code>MultiThreadedRenderer</code> to use this method
-passing the thread of the original <code>render</code> call.
+passing a custom <code>Interruptible</code> instance.
 Simplify the <code>join</code> method to call <code>join</code> on each started thread
 without passing on interruptions.
 Can the <code>MultiThreadedRenderer</code> still be aborted successfully
