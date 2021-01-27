@@ -74,6 +74,11 @@ Coordinating threads can be tricky and we will discuss
 how to avoid blocking computations 
 by different threads waiting for each other.
 
+In the thrid part of this tutorial
+we introduce the actor model and how to
+[use actors](docs/actors/)
+in Java.
+
 The underlying source code is available online, 
 and this tutorial includes tasks to extend it.
 If you want to follow along, you can use your own Java development environment
