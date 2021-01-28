@@ -38,3 +38,16 @@ and finally implement a
 [chat application](chat)
 as an example of a realistic application using actors.
 
+The Akka documentation contains many things we will not discuss in this tutorial.
+It is recommended for you to read it.
+Here are selected links to parts of the documentation that can be used as a starting point.
+
+ * [Why modern systems need a new programming model](https://doc.akka.io/docs/akka/current/typed/guide/actors-motivation.html)
+ * [How the actor model meets the needs of modern, distributed systems](https://doc.akka.io/docs/akka/current/typed/guide/actors-intro.html)
+ * [Style Guide](https://doc.akka.io/docs/akka/current/typed/style-guide.html)
+ * [Actor References, Paths and Addresses](https://doc.akka.io/docs/akka/current/general/addressing.html)
+ * [Actor Discovery](https://doc.akka.io/docs/akka/current/typed/actor-discovery.html)
+ * [Interaction Patterns](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html)
+ * [Mesage Delivery Reliability](https://doc.akka.io/docs/akka/current/general/message-delivery-reliability.html)
+ * [Akka and the Java Memory Model](https://doc.akka.io/docs/akka/current/general/jmm.html)
+
