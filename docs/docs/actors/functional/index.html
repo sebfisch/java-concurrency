@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Functional Interface #  In this section we discuss an alternative API for creating behaviors for actors. We use the same tests as before and adjust the corresponding behavior classes to the functional actor API.
+Receiving messages #  Here is an adjusted definition for the Terminator behaviour.
+static class Terminator { static Behavior&lt;Object&gt; create() { return Behaviors.receiveMessage(msg -&gt; Behaviors.stopped()); } } The class no longer extends AbstractBehavior and uses Behaviours.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Functional Interface" />
+<meta property="og:description" content="Functional Interface #  In this section we discuss an alternative API for creating behaviors for actors. We use the same tests as before and adjust the corresponding behavior classes to the functional actor API.
+Receiving messages #  Here is an adjusted definition for the Terminator behaviour.
+static class Terminator { static Behavior&lt;Object&gt; create() { return Behaviors.receiveMessage(msg -&gt; Behaviors.stopped()); } } The class no longer extends AbstractBehavior and uses Behaviours." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/actors/functional/" />
+<meta property="article:modified_time" content="2021-01-28T04:08:15+01:00" />
+<title>Functional Interface | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class="">Using Actors</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/creation/" class="">Creating Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/systems/" class="">Actor Systems</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/failure/" class="">Handling Failure</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/remote/" class="">Remote Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/functional/" class=" active">Functional Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/chat/" class="">Chat Application</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Functional Interface</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#receiving-messages">Receiving messages</a></li>
+    <li><a href="#local-state">Local state</a></li>
+    <li><a href="#actor-context">Actor context</a></li>
+    <li><a href="#task-refactor-echo-loop">Task: Refactor echo loop</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="functional-interface">
+  Functional Interface
+  <a class="anchor" href="#functional-interface">#</a>
+</h1>
+<p>In this section we discuss an alternative API for creating behaviors for actors.
+We use the same tests as before
+and adjust the corresponding behavior classes to the functional actor API.</p>
+<h2 id="receiving-messages">
+  Receiving messages
+  <a class="anchor" href="#receiving-messages">#</a>
+</h2>
+<p>Here is an adjusted definition for the <code>Terminator</code> behaviour.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Terminator</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">(</span>msg <span style="color:#f92672">-&gt;</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">stopped</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The class no longer extends <code>AbstractBehavior</code>
+and uses <code>Behaviours.receiveMessage</code> to <code>create</code> an appropriate behaviour.</p>
+<p>The adjusted <code>create</code> method for the <code>Bouncer</code> behavior
+also uses <code>receiveMessage</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Ping<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">(</span>ping <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        ping<span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Pong<span style="color:#f92672">());</span>
+        <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">same</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">});</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>We cannot <code>return this</code> from the message handler
+and instead use <code>Behaviors.same</code>.</p>
+<h2 id="local-state">
+  Local state
+  <a class="anchor" href="#local-state">#</a>
+</h2>
+<p>The conversion of the <code>Calculator</code> is interesting
+because it has local state for the total value.
+In the functional style,
+local state can be passed in arguments to methods creating behaviors.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Cmd<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> total<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">receive</span><span style="color:#f92672">(</span>Cmd<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>GetTotal<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            msg<span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span>total<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">same</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">})</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>AddFraction<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+<span style="display:block;width:100%;background-color:#3c3d38">            <span style="color:#66d9ef">return</span> create<span style="color:#f92672">(</span>total <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">numerator</span> <span style="color:#f92672">/</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">denominator</span><span style="color:#f92672">);</span>
+</span>        <span style="color:#f92672">})</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Note the recursive call to <code>create</code>
+with a new total value
+in a message handler.
+To register multiple handlers for different message types
+we can the builder pattern with <code>Behaviors.receive</code>.</p>
+<h2 id="actor-context">
+  Actor context
+  <a class="anchor" href="#actor-context">#</a>
+</h2>
+<p>If we need to access the actor context,
+for example to spawn child actors,
+we can use <code>Behaviors.setup</code>.
+Consider the <code>create</code> method for the <code>Computer</code> behavior.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>ctx <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calc <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">spawnAnonymous</span><span style="color:#f92672">(</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>0<span style="color:#f92672">));</span>
+        ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">watch</span><span style="color:#f92672">(</span>calc<span style="color:#f92672">);</span> <span style="color:#75715e">// death pact
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">return</span> computer<span style="color:#f92672">(</span>calc<span style="color:#f92672">);</span>
+    <span style="color:#f92672">});</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The method <code>computer</code> expects a reference to a calculator
+as argument representing its local state
+and implements the <code>Computer</code> behavior.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">computer</span><span style="color:#f92672">(</span>ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calc<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">receive</span><span style="color:#f92672">(</span>Request<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Forward<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            calc<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">cmd</span><span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">same</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">})</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Compute<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            calc<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">AddFraction</span><span style="color:#f92672">(</span>100<span style="color:#f92672">,</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">arg</span><span style="color:#f92672">));</span>
+            <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">same</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">})</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="task-refactor-echo-loop">
+  Task: Refactor echo loop
+  <a class="anchor" href="#task-refactor-echo-loop">#</a>
+</h2>
+<p>Modify the definition of <code>EchoLoop</code>
+to use the functional instead of the object-oriented API
+for the root behavior of the actor system.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#receiving-messages">Receiving messages</a></li>
+    <li><a href="#local-state">Local state</a></li>
+    <li><a href="#actor-context">Actor context</a></li>
+    <li><a href="#task-refactor-echo-loop">Task: Refactor echo loop</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

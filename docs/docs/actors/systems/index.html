@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Actor Systems #  We now look at how actors can be started outside of tests. All actors started in a program form a hierarchy. The root of this hierarchy is a behavior started by an actor system. Typically, there is only one actor system per application.
+Echoing messages #  As a simple example of an application with multiple actors, we write a program where one actor echos messages back to another.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Actor Systems" />
+<meta property="og:description" content="Actor Systems #  We now look at how actors can be started outside of tests. All actors started in a program form a hierarchy. The root of this hierarchy is a behavior started by an actor system. Typically, there is only one actor system per application.
+Echoing messages #  As a simple example of an application with multiple actors, we write a program where one actor echos messages back to another." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/actors/systems/" />
+<meta property="article:modified_time" content="2021-01-28T04:08:15+01:00" />
+<title>Actor Systems | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class="">Using Actors</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/creation/" class="">Creating Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/systems/" class=" active">Actor Systems</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/failure/" class="">Handling Failure</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/remote/" class="">Remote Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/functional/" class="">Functional Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/chat/" class="">Chat Application</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Actor Systems</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#echoing-messages">Echoing messages</a></li>
+    <li><a href="#implementing-the-echo-client">Implementing the echo client</a></li>
+    <li><a href="#task-implement-the-echo-server">Task: Implement the echo server</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="actor-systems">
+  Actor Systems
+  <a class="anchor" href="#actor-systems">#</a>
+</h1>
+<p>We now look at how actors can be started outside of tests.
+All actors started in a program form a hierarchy.
+The root of this hierarchy is a behavior started by an actor system.
+Typically, there is only one actor system per application.</p>
+<h2 id="echoing-messages">
+  Echoing messages
+  <a class="anchor" href="#echoing-messages">#</a>
+</h2>
+<p>As a simple example of an application with multiple actors,
+we write a program where one actor echos messages back to another.
+The messages contain lines read from standard input,
+and the sender prints messages that bounced back from the other actor.</p>
+<p>Here is an example interaction with our program.
+Every second line is input, the rest is output.</p>
+<pre><code>Type 'quit' to exit, something else to send
+hi
+received: hi
+ok
+received: ok
+quit
+</code></pre><p>Here is the first part of the implementation
+with the main method creating the actor system.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EchoLoop</span> <span style="color:#66d9ef">extends</span> AbstractBehavior<span style="color:#f92672">&lt;</span>Echo<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> BufferedReader STDIN <span style="color:#f92672">=</span> 
+        <span style="color:#66d9ef">new</span> BufferedReader<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> InputStreamReader<span style="color:#f92672">(</span>System<span style="color:#f92672">.</span><span style="color:#a6e22e">in</span><span style="color:#f92672">));</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ActorSystem<span style="color:#f92672">&lt;</span>Echo<span style="color:#f92672">&gt;</span> echoLoop <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            ActorSystem<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>EchoLoop<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(),</span> <span style="color:#e6db74">&#34;echo-loop&#34;</span><span style="color:#f92672">);</span>
+        
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Type &#39;quit&#39; to exit, something else to send&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">try</span><span style="color:#f92672">(</span>Stream<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> lines <span style="color:#f92672">=</span> STDIN<span style="color:#f92672">.</span><span style="color:#a6e22e">lines</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            lines
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">takeWhile</span><span style="color:#f92672">(</span>Predicate<span style="color:#f92672">.</span><span style="color:#a6e22e">not</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;quit&#34;</span><span style="color:#f92672">::</span>equals<span style="color:#f92672">))</span>
+                <span style="color:#f92672">.</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>line <span style="color:#f92672">-&gt;</span> echoLoop<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Echo<span style="color:#f92672">(</span>line<span style="color:#f92672">)));</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            echoLoop<span style="color:#f92672">.</span><span style="color:#a6e22e">terminate</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// to be continued
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>The program uses <code>ActorSystem.create</code> with an <code>EchoLoop</code> behavior
+(continued below)
+to start all used actors.
+Every line read from standard input is sent to the root actor
+wrapped inside an <code>Echo</code> message.
+When the user types <code>quit</code>, we shut down the actor system using <code>terminate</code>.
+Otherwise, the program would continue to run because the actors would still run.</p>
+<p>The <code>Echo</code> message, defined as a nested class, wraps text.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Echo</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> String text<span style="color:#f92672">;</span>
+    
+    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Echo</span><span style="color:#f92672">(</span>String text<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">text</span> <span style="color:#f92672">=</span> text<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <code>EchoLoop</code> behavior stores references to other actors.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Echo<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>EchoLoop<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> ActorRef<span style="color:#f92672">&lt;</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> server<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> ActorRef<span style="color:#f92672">&lt;</span>EchoClient<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> client<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#a6e22e">EchoLoop</span><span style="color:#f92672">(</span>ActorContext<span style="color:#f92672">&lt;</span>Echo<span style="color:#f92672">&gt;</span> ctx<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">);</span>
+    server <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(),</span> <span style="color:#e6db74">&#34;echo-server&#34;</span><span style="color:#f92672">);</span>
+    client <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>EchoClient<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(),</span> <span style="color:#e6db74">&#34;echo-client&#34;</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>In the constructor we use the provided actor context
+to <code>spawn</code> the other actors.
+When receiving an <code>Echo</code> message,
+the wrapped text is forwarded to the client using its <code>Send</code> message.
+Apart from the text, the <code>Send</code> message also contains
+a reference to the actor the text should be sent to.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Echo<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">()</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onAnyMessage</span><span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>echo<span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> EchoLoop <span style="color:#a6e22e">echo</span><span style="color:#f92672">(</span>Echo msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    client<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> EchoClient<span style="color:#f92672">.</span><span style="color:#a6e22e">Send</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">text</span><span style="color:#f92672">,</span> server<span style="color:#f92672">));</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="implementing-the-echo-client">
+  Implementing the echo client
+  <a class="anchor" href="#implementing-the-echo-client">#</a>
+</h2>
+<p>The definition of the echo client starts with the messages it can receive.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">EchoClient</span> <span style="color:#66d9ef">extends</span> AbstractBehavior<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Request</span> <span style="color:#f92672">{}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Send</span> <span style="color:#66d9ef">implements</span> Request <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> String text<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> ActorRef<span style="color:#f92672">&lt;</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> server<span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Send</span><span style="color:#f92672">(</span>String text<span style="color:#f92672">,</span> ActorRef<span style="color:#f92672">&lt;</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> server<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">text</span> <span style="color:#f92672">=</span> text<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">server</span> <span style="color:#f92672">=</span> server<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Log</span> <span style="color:#66d9ef">implements</span> Request <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Response</span> response<span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Log</span><span style="color:#f92672">(</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Response</span> response<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> response<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// to be continued
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>All possible message implement the empty interface <code>Request</code>
+which we use as type parameter for the message type.
+We have already seen that the <code>Send</code> message wraps text
+and a reference to a server actor.
+The <code>Log</code> message wraps a server response.</p>
+<p>As message handlers we use method references to an overloaded respond method.
+The builder method <code>onMessage</code> is used to restrict the handler
+to specific message types.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">()</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Send<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>respond<span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>respond<span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Clients respond to <code>Log</code> messages by printing the wrapped text.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>Log msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;received: %s%n&#34;</span><span style="color:#f92672">,</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">response</span><span style="color:#f92672">.</span><span style="color:#a6e22e">text</span><span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The text wrapped in a <code>Send</code> message is forwarded
+to the wrapped server actor using its <code>Request</code> message.
+Like <code>Send</code>, the <code>EchoServer.Request</code> message also wraps
+an actor reference in addition to the text.
+Both messages are equivalent,
+but we use different types for demonstration purposes.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>Send msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> ActorRef<span style="color:#f92672">&lt;</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Response</span><span style="color:#f92672">&gt;</span> logAdapter <span style="color:#f92672">=</span>
+        getContext<span style="color:#f92672">().</span><span style="color:#a6e22e">messageAdapter</span><span style="color:#f92672">(</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Response</span><span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> Log<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">);</span>
+    msg<span style="color:#f92672">.</span><span style="color:#a6e22e">server</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">text</span><span style="color:#f92672">,</span> logAdapter<span style="color:#f92672">));</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The echo client does not handle server requests directly,
+so it cannot pass a reference to itself inside the request to the server.
+Server requests need to be wrapped inside the <code>Log</code> message
+for the client to be able to handle them.
+The <code>messageAdapter</code> method on the actor context handles the wrapping
+and returns an actor reference of appropriate type.</p>
+<p>The following test demonstrates the behavior of echo clients sending a message.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatEchoClientSendsGivenMessage</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>EchoClient<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> client <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>EchoClient<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">());</span>
+    
+    String text <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hello world&#34;</span><span style="color:#f92672">;</span>
+    TestProbe<span style="color:#f92672">&lt;</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> server <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+    client<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> EchoClient<span style="color:#f92672">.</span><span style="color:#a6e22e">Send</span><span style="color:#f92672">(</span>text<span style="color:#f92672">,</span> server<span style="color:#f92672">.</span><span style="color:#a6e22e">getRef</span><span style="color:#f92672">()));</span>
+
+    EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span> request <span style="color:#f92672">=</span> server<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">();</span>
+    assertEquals<span style="color:#f92672">(</span>text<span style="color:#f92672">,</span> request<span style="color:#f92672">.</span><span style="color:#a6e22e">text</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="task-implement-the-echo-server">
+  Task: Implement the echo server
+  <a class="anchor" href="#task-implement-the-echo-server">#</a>
+</h2>
+<p>The class <code>EchoServer</code> defines <code>Request</code> and <code>Response</code> types
+for actors that echo sent text back to their sender.
+Implement the corresponding behavior
+receiving <code>Request</code> messages and sending back a <code>Response</code> with the same text
+before waiting for new messages.</p>
+<p>Add a test to the <code>EchoTests</code> class
+demonstrating that the server behaves as intended.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#echoing-messages">Echoing messages</a></li>
+    <li><a href="#implementing-the-echo-client">Implementing the echo client</a></li>
+    <li><a href="#task-implement-the-echo-server">Task: Implement the echo server</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

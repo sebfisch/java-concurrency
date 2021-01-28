@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Creating Actors #  Akka provides different APIs to program with actors. In this section, we look at the typed object-oriented API by discussing unit tests defined in ObjectOrientedActorTests that demonstrate how to use it. Akka provides a helper class to manage actors in tests. We instantiate it as follows.
+static final TestKitJunitResource KIT = new TestKitJunitResource(); Sending and receiving messages #  Our first test uses the test kit to spawn an actor that stops after receiving the first message.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Creating Actors" />
+<meta property="og:description" content="Creating Actors #  Akka provides different APIs to program with actors. In this section, we look at the typed object-oriented API by discussing unit tests defined in ObjectOrientedActorTests that demonstrate how to use it. Akka provides a helper class to manage actors in tests. We instantiate it as follows.
+static final TestKitJunitResource KIT = new TestKitJunitResource(); Sending and receiving messages #  Our first test uses the test kit to spawn an actor that stops after receiving the first message." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/actors/creation/" />
+<meta property="article:modified_time" content="2021-01-28T04:08:15+01:00" />
+<title>Creating Actors | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class="">Using Actors</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/creation/" class=" active">Creating Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/systems/" class="">Actor Systems</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/failure/" class="">Handling Failure</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/remote/" class="">Remote Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/functional/" class="">Functional Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/chat/" class="">Chat Application</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Creating Actors</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#sending-and-receiving-messages">Sending and receiving messages</a></li>
+    <li><a href="#custom-message-types">Custom message types</a></li>
+    <li><a href="#task-add-handshake-test">Task: Add handshake test</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="creating-actors">
+  Creating Actors
+  <a class="anchor" href="#creating-actors">#</a>
+</h1>
+<p>Akka provides different APIs to program with actors.
+In this section, we look at the typed object-oriented API
+by discussing unit tests defined in <code>ObjectOrientedActorTests</code>
+that demonstrate how to use it.
+Akka provides a helper class to manage actors in tests.
+We instantiate it as follows.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> TestKitJunitResource KIT <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> TestKitJunitResource<span style="color:#f92672">();</span>
+</code></pre></div><h2 id="sending-and-receiving-messages">
+  Sending and receiving messages
+  <a class="anchor" href="#sending-and-receiving-messages">#</a>
+</h2>
+<p>Our first test uses the test kit to spawn an actor
+that stops after receiving the first message.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatTerminatorStopsOnMessage</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> terminator <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>Terminator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">());</span>
+    terminator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">);</span>
+    KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">().</span><span style="color:#a6e22e">expectTerminated</span><span style="color:#f92672">(</span>terminator<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>In Akka, actors are created from <code>Behavior</code> instances
+and the method <code>tell</code> on actor references is used
+to send a message to an actor.
+In object-oriented style,
+<code>Behavior</code>s are defined as sub-classes of <code>AbstractBehavior</code>.
+For simplicity, we define a static nested class.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Terminator</span> <span style="color:#66d9ef">extends</span> AbstractBehavior<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>Terminator<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    Terminator<span style="color:#f92672">(</span>ActorContext<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> ctx<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Object<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">()</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">onAnyMessage</span><span style="color:#f92672">(</span>msg <span style="color:#f92672">-&gt;</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">stopped</span><span style="color:#f92672">())</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The type parameter is for corresponding messages.
+For this test, we do not care about this type and use <code>Object</code>.
+By convention, behaviour classes define a static factory method <code>create</code>
+which is used to instantiate behaviors.
+It should be defined using <code>Behaviors.setup</code>
+to call the super-class constructor with the provided <code>ActorContext</code>.</p>
+<p>Object-oriented behaviors specify how to respond to messages
+by overriding the <code>createReceive</code> method,
+which uses the builder pattern to register message handlers.
+Handlers can return different behaviors
+that are used subsequently.
+In this case we use <code>Behaviors.stopped</code> to stop responding.</p>
+<h2 id="custom-message-types">
+  Custom message types
+  <a class="anchor" href="#custom-message-types">#</a>
+</h2>
+<p>As a best practice, behavior classes should define types
+for corresponding messages as nested classes.
+The following behavior defines two such types.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Bouncer</span> <span style="color:#66d9ef">extends</span> AbstractBehavior<span style="color:#f92672">&lt;</span>Ping<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Ping</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> ActorRef<span style="color:#f92672">&lt;</span>Pong<span style="color:#f92672">&gt;</span> sender<span style="color:#f92672">;</span>
+
+        Ping<span style="color:#f92672">(</span>ActorRef<span style="color:#f92672">&lt;</span>Pong<span style="color:#f92672">&gt;</span> sender<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span> <span style="color:#f92672">=</span> sender<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Pong</span> <span style="color:#f92672">{</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Ping<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>Bouncer<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    Bouncer<span style="color:#f92672">(</span>ActorContext<span style="color:#f92672">&lt;</span>Ping<span style="color:#f92672">&gt;</span> ctx<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Ping<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">().</span><span style="color:#a6e22e">onAnyMessage</span><span style="color:#f92672">(</span>ping <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            ping<span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Pong<span style="color:#f92672">());</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The <code>Ping</code> message wraps a reference to the actor that sent the message.
+The <code>Pong</code> message is used to respond to pings.
+When receiving a ping, actors with this behavior
+respond to the actor wrapped in the message.
+Instead of stopping, the handler returns the same behavior
+in order to continue processing pings indefinitely.</p>
+<p>The following test spawns an actor with this behavior.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatBouncerBounces</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Ping<span style="color:#f92672">&gt;</span> bouncer <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>Bouncer<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">());</span>
+    TestProbe<span style="color:#f92672">&lt;</span>Pong<span style="color:#f92672">&gt;</span> probe <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+    IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> 5<span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>i <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        bouncer<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Ping<span style="color:#f92672">(</span>probe<span style="color:#f92672">.</span><span style="color:#a6e22e">getRef</span><span style="color:#f92672">()));</span>
+        assertNotNull<span style="color:#f92672">(</span>probe<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">());</span>
+    <span style="color:#f92672">});</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Several messages are sent to the actor,
+and each time the sender gets a response.</p>
+<h2 id="task-add-handshake-test">
+  Task: Add handshake test
+  <a class="anchor" href="#task-add-handshake-test">#</a>
+</h2>
+<p>Add a new behavior <code>Handshake</code>
+defined as a nested class inside <code>ObjectOrientedActorTests</code>.
+Define a corresponding message type <code>Self</code>
+wrapping a reference to an actor
+participating in the handshake.
+Actors using the <code>Handshake</code> behavior
+should answer <code>Self</code> messages with another <code>Self</code> message,
+sending their own reference to the wrapped reference
+and then continue waiting for more handshakes.
+In object-oriented behaviors,
+the own actor reference is available via <code>getContext().getSelf()</code>.</p>
+<p>Write a test demonstrating that handshakes are answered.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#sending-and-receiving-messages">Sending and receiving messages</a></li>
+    <li><a href="#custom-message-types">Custom message types</a></li>
+    <li><a href="#task-add-handshake-test">Task: Add handshake test</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

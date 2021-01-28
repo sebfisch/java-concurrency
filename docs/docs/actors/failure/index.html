@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Handling Failure #  In this section we will give a first impression how actor systems can be made resilient against failure by supervising actors, for example, to restart them automatically. We will use tests again to document the corresponding API.
+Failing behaviors #  The Akka documentation cites a distinction between failures and validation errors:
+ A validation error means that the data of a command sent to an actor is not valid, this should rather be modelled as a part of the actor protocol than make the actor throw exceptions.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Handling Failure" />
+<meta property="og:description" content="Handling Failure #  In this section we will give a first impression how actor systems can be made resilient against failure by supervising actors, for example, to restart them automatically. We will use tests again to document the corresponding API.
+Failing behaviors #  The Akka documentation cites a distinction between failures and validation errors:
+ A validation error means that the data of a command sent to an actor is not valid, this should rather be modelled as a part of the actor protocol than make the actor throw exceptions." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/actors/failure/" />
+<meta property="article:modified_time" content="2021-01-28T04:08:15+01:00" />
+<title>Handling Failure | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class="">Using Actors</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/creation/" class="">Creating Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/systems/" class="">Actor Systems</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/failure/" class=" active">Handling Failure</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/remote/" class="">Remote Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/functional/" class="">Functional Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/chat/" class="">Chat Application</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Handling Failure</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#failing-behaviors">Failing behaviors</a></li>
+    <li><a href="#supervising-behaviors">Supervising behaviors</a></li>
+    <li><a href="#watching-actors">Watching actors</a></li>
+    <li><a href="#task-more-robust-echos">Task: More robust echos</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="handling-failure">
+  Handling Failure
+  <a class="anchor" href="#handling-failure">#</a>
+</h1>
+<p>In this section we will give a first impression
+how actor systems can be made resilient against failure
+by supervising actors, for example, to restart them automatically.
+We will use tests again to document the corresponding API.</p>
+<h2 id="failing-behaviors">
+  Failing behaviors
+  <a class="anchor" href="#failing-behaviors">#</a>
+</h2>
+<p>The Akka documentation cites a distinction between failures and validation errors:</p>
+<blockquote>
+<p>A <strong>validation error</strong> means that the data of a command sent to an actor is not valid,
+this should rather be modelled as a part of the actor protocol than make the actor throw exceptions.</p>
+<p>A <strong>failure</strong> is instead something unexpected or outside the control of the actor itself,
+for example a database connection that broke.
+Opposite to validation errors, it is seldom useful to model failures as part of the protocol
+as a sending actor can very seldomly do anything useful about it.</p>
+</blockquote>
+<p>For simplicity, we will use examples of failures that would better be handled as validation errors.</p>
+<p>To demonstrate supervision,
+we define a calculator that may fail due to division by zero.
+The calculator defines a message <code>GetTotal</code> to query the current total.
+The message <code>AddFraction</code> is meant to provoke a complex computation,
+dividing the wrapped numbers and adding the result to the current total.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Calculator</span> <span style="color:#66d9ef">extends</span> AbstractBehavior<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Cmd</span> <span style="color:#f92672">{</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GetTotal</span> <span style="color:#66d9ef">implements</span> Cmd <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> ActorRef<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> sender<span style="color:#f92672">;</span>
+
+        GetTotal<span style="color:#f92672">(</span>ActorRef<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> sender<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span> <span style="color:#f92672">=</span> sender<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AddFraction</span> <span style="color:#66d9ef">implements</span> Cmd <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> numerator<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> denominator<span style="color:#f92672">;</span>
+
+        AddFraction<span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> numerator<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> denominator<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">numerator</span> <span style="color:#f92672">=</span> numerator<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">denominator</span> <span style="color:#f92672">=</span> denominator<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#75715e">// to be continued
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><p>The calculator stores the current total in local state.
+The initial value must be passed to the <code>create</code> method.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Cmd<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> total<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>ctx <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">new</span> Calculator<span style="color:#f92672">(</span>ctx<span style="color:#f92672">,</span> total<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> total<span style="color:#f92672">;</span>
+
+Calculator<span style="color:#f92672">(</span>ActorContext<span style="color:#f92672">&lt;</span>Cmd<span style="color:#f92672">&gt;</span> ctx<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> total<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">total</span> <span style="color:#f92672">=</span> total<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#a6e22e">@Override</span>
+<span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Cmd<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">().</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>GetTotal<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        msg<span style="color:#f92672">.</span><span style="color:#a6e22e">sender</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span>total<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}).</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>AddFraction<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+        total <span style="color:#f92672">+=</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">numerator</span> <span style="color:#f92672">/</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">denominator</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}).</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The messages are handled in the way described above.
+An important detail is that we use integer division
+to get an <code>ArithmeticException</code> on division by zero.</p>
+<p>The following test shows how the calculator works
+when there is no exception.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatCalculatorCalculates</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calculator <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>0<span style="color:#f92672">));</span>
+    TestProbe<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> probe <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>5<span style="color:#f92672">,</span> 2<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> 2<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> GetTotal<span style="color:#f92672">(</span>probe<span style="color:#f92672">.</span><span style="color:#a6e22e">getRef</span><span style="color:#f92672">()));</span>
+
+    assertEquals<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> probe<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>After some complex computations
+the total can be queried without issue.
+In the next test we provoke division by zero,
+and observe that typed actors are stopped on failure
+when no supervision strategy is defined.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatCalculatorStopsOnCrash</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calculator <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>0<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+    KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">().</span><span style="color:#a6e22e">expectTerminated</span><span style="color:#f92672">(</span>calculator<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="supervising-behaviors">
+  Supervising behaviors
+  <a class="anchor" href="#supervising-behaviors">#</a>
+</h2>
+<p>In order to maintain the calculator&rsquo;s responsiveness in the presence of failures,
+we can associate supervision strategies before spawning an actor.
+There are basically two alternatives to stopping: resuming and restarting.</p>
+<p>The following test shows that a resumed actor acts as if nothing happened.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatResumingCalculatorResumesAfterCrash</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    Behavior<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> resuming <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">supervise</span><span style="color:#f92672">(</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>0<span style="color:#f92672">))</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>                    <span style="color:#f92672">.</span><span style="color:#a6e22e">onFailure</span><span style="color:#f92672">(</span>SupervisorStrategy<span style="color:#f92672">.</span><span style="color:#a6e22e">resume</span><span style="color:#f92672">());</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calculator <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>resuming<span style="color:#f92672">);</span>
+    TestProbe<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> probe <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>5<span style="color:#f92672">,</span> 2<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> GetTotal<span style="color:#f92672">(</span>probe<span style="color:#f92672">.</span><span style="color:#a6e22e">getRef</span><span style="color:#f92672">()));</span>
+
+    assertEquals<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> probe<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>Even after division by zero occured,
+the actor responds to the message to query the total.
+The response to this message is unaffected by the failure.</p>
+<p>A restarted actor also continues to respond to messages.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatRestartingCalculatorRestartsAfterCrash</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    Behavior<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> restarting <span style="color:#f92672">=</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">supervise</span><span style="color:#f92672">(</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>0<span style="color:#f92672">))</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>                    <span style="color:#f92672">.</span><span style="color:#a6e22e">onFailure</span><span style="color:#f92672">(</span>SupervisorStrategy<span style="color:#f92672">.</span><span style="color:#a6e22e">restart</span><span style="color:#f92672">());</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calculator <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>restarting<span style="color:#f92672">);</span>
+    TestProbe<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> probe <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>5<span style="color:#f92672">,</span> 2<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> AddFraction<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> 0<span style="color:#f92672">));</span>
+    calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> GetTotal<span style="color:#f92672">(</span>probe<span style="color:#f92672">.</span><span style="color:#a6e22e">getRef</span><span style="color:#f92672">()));</span>
+
+    assertEquals<span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> probe<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>But with the restart strategy,
+the total queried after the failure is reset to the initial value.</p>
+<h2 id="watching-actors">
+  Watching actors
+  <a class="anchor" href="#watching-actors">#</a>
+</h2>
+<p>Actors can watch other actors to be notified when they stop.
+An interesting side effect of watching an actor is the so called death pact
+which means that the termination signal sent due to watching
+causes an exception if it is not handled
+which in turn causes the watching actor to stop if no supervision strategy is defined.</p>
+<p>In order to demonstrate a death pact,
+we define another behavior that spawns and watches a calculator.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Computer</span> <span style="color:#66d9ef">extends</span> AbstractBehavior<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Request</span> <span style="color:#f92672">{}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Forward</span> <span style="color:#66d9ef">implements</span> Request <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span> cmd<span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Forward</span><span style="color:#f92672">(</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span> cmd<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">cmd</span> <span style="color:#f92672">=</span> cmd<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Compute</span> <span style="color:#66d9ef">implements</span> Request <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> arg<span style="color:#f92672">;</span>
+
+        <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">Compute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> arg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">arg</span> <span style="color:#f92672">=</span> arg<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>ctx <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+            ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calc <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">spawnAnonymous</span><span style="color:#f92672">(</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>                Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>0<span style="color:#f92672">));</span>
+<span style="display:block;width:100%;background-color:#3c3d38">            ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">watch</span><span style="color:#f92672">(</span>calc<span style="color:#f92672">);</span> <span style="color:#75715e">// death pact
+</span></span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Computer<span style="color:#f92672">(</span>ctx<span style="color:#f92672">,</span> calc<span style="color:#f92672">);</span>
+        <span style="color:#f92672">});</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calc<span style="color:#f92672">;</span>
+
+    Computer<span style="color:#f92672">(</span>ActorContext<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> ctx<span style="color:#f92672">,</span> ActorRef<span style="color:#f92672">&lt;</span>Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">Cmd</span><span style="color:#f92672">&gt;</span> calc<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">calc</span> <span style="color:#f92672">=</span> calc<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#a6e22e">@Override</span>
+    <span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">()</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Forward<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                calc<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">cmd</span><span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">})</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Compute<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> msg <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                calc<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Calculator<span style="color:#f92672">.</span><span style="color:#a6e22e">AddFraction</span><span style="color:#f92672">(</span>100<span style="color:#f92672">,</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">arg</span><span style="color:#f92672">));</span>
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">})</span>
+            <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>A computer handles two types of messages.
+<code>Forward</code> can be used to forward a calculator command to the wrapped calculator.
+<code>Compute</code> causes a calculation that involves division by the wrapped argument.
+The most interesting part is the call to the <code>watch</code> method on the actor context
+which leads to a death pact because the corresponding termination signal is not handled.</p>
+<p>The following test shows how the computer computes if there are no exceptions.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatComputerComputes</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Computer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> computer <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>Computer<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">());</span>
+    TestProbe<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> probe <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+
+    computer<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Compute<span style="color:#f92672">(</span>20<span style="color:#f92672">));</span>
+    computer<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Compute<span style="color:#f92672">(</span>30<span style="color:#f92672">));</span>
+    computer<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Forward<span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> GetTotal<span style="color:#f92672">(</span>probe<span style="color:#f92672">.</span><span style="color:#a6e22e">getRef</span><span style="color:#f92672">())));</span>
+
+    assertEquals<span style="color:#f92672">(</span>8<span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span><span style="color:#f92672">)</span> probe<span style="color:#f92672">.</span><span style="color:#a6e22e">receiveMessage</span><span style="color:#f92672">());</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>The final test shows that the computer is stopped with the calculator
+after division by zero.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Test</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">testThatComputerDiesWithCalculator</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Computer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> computer <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">spawn</span><span style="color:#f92672">(</span>Computer<span style="color:#f92672">.</span><span style="color:#a6e22e">create</span><span style="color:#f92672">());</span>
+    TestProbe<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span> probe <span style="color:#f92672">=</span> KIT<span style="color:#f92672">.</span><span style="color:#a6e22e">createTestProbe</span><span style="color:#f92672">();</span>
+
+    computer<span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Compute<span style="color:#f92672">(</span>0<span style="color:#f92672">));</span>
+    probe<span style="color:#f92672">.</span><span style="color:#a6e22e">expectTerminated</span><span style="color:#f92672">(</span>computer<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h2 id="task-more-robust-echos">
+  Task: More robust echos
+  <a class="anchor" href="#task-more-robust-echos">#</a>
+</h2>
+<p>When actors that have spawned other actors are restarted,
+those child actors are stopped by default.
+As a consequence, the parent actor can respawn the children
+without polluting the system with unused actors.</p>
+<p>One possible strategy to react to the failure of a child
+is for the parent to be restarted itself
+stopping all other children.
+(Whether this is the preferrable option
+depends on the circumstances.)</p>
+<p>First, modify the definition of the <code>EchoLoop</code> behavior
+such that it enters a death pact with the spawned server and client,
+meaning that it fails itself when one of its children fails.
+Then, add supervision when starting the parent behavior
+to cause a restart in case of failure.</p>
+<p>In order to test the gained robustness,
+modify the server and client to crash on certain messages.
+Check that the echo loop is still working
+even after provoking crashs in the server or client.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#failing-behaviors">Failing behaviors</a></li>
+    <li><a href="#supervising-behaviors">Supervising behaviors</a></li>
+    <li><a href="#watching-actors">Watching actors</a></li>
+    <li><a href="#task-more-robust-echos">Task: More robust echos</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

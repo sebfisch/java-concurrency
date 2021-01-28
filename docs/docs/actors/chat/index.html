@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" dir=>
+
+<head>
+  <meta name="generator" content="Hugo 0.79.1" />
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Chat Application #  In this section we implement a more complex application using actors. The application can be used to chat on the command line allowing clients on different computers to connect to a remote chat server.
+The messages for the protocol are defined in the classes ChatClient and ChatServer. We will only discuss selected parts of the chat client implementation. Implementing the chat server is left as an exercise.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Chat Application" />
+<meta property="og:description" content="Chat Application #  In this section we implement a more complex application using actors. The application can be used to chat on the command line allowing clients on different computers to connect to a remote chat server.
+The messages for the protocol are defined in the classes ChatClient and ChatServer. We will only discuss selected parts of the chat client implementation. Implementing the chat server is left as an exercise." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/actors/chat/" />
+<meta property="article:modified_time" content="2021-01-28T04:08:15+01:00" />
+<title>Chat Application | Java Concurrency</title>
+<link rel="manifest" href="/java-concurrency/manifest.json">
+<link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+
+  
+</head>
+
+<body dir=>
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      
+  <nav>
+<h2 class="book-brand">
+  <a href="/java-concurrency"><span>Java Concurrency</span>
+  </a>
+</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/" class="">Using Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/classic/" class="">Classic Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/pools/" class="">Thread Pools</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/work_stealing/" class="">Work Stealing</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" class="">Parallel Streams</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/" class="">Coordinating Threads</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/synchronization/" class="">Classic Synchronization</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/locking/" class="">Flexible Locking</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/completable_futures/" class="">Completable Futures</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/coordinating/throttling/" class="">Throttling Tasks</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class="">Using Actors</a>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/creation/" class="">Creating Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/systems/" class="">Actor Systems</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/failure/" class="">Handling Failure</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/remote/" class="">Remote Actors</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/functional/" class="">Functional Interface</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/chat/" class=" active">Chat Application</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="http://sebfisch.github.io/java-concurrency/docs/links/" class="">External Links</a>
+  
+
+          
+  <ul>
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var menu=document.querySelector("aside.book-menu nav");addEventListener("beforeunload",function(event){localStorage.setItem("menu.scrollTop",menu.scrollTop);});menu.scrollTop=localStorage.getItem("menu.scrollTop");})();</script>
+
+
+ 
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Chat Application</strong>
+
+  <label for="toc-control">
+    
+    <img src="/java-concurrency/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#implementing-the-chat-client">Implementing the chat client</a></li>
+    <li><a href="#task-implement-the-chat-server">Task: Implement the chat server</a></li>
+  </ul>
+</nav>
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown"><h1 id="chat-application">
+  Chat Application
+  <a class="anchor" href="#chat-application">#</a>
+</h1>
+<p>In this section we implement a more complex application using actors.
+The application can be used to chat on the command line
+allowing clients on different computers to connect to a remote chat server.</p>
+<p>The messages for the protocol are defined in the classes <code>ChatClient</code> and <code>ChatServer</code>.
+We will only discuss selected parts of the chat client implementation.
+Implementing the chat server is left as an exercise.
+The command line applications for the client and server
+can be started using <code>RemoteChatClient</code> and <code>RemoteChatServer</code>, respectively.</p>
+<h2 id="implementing-the-chat-client">
+  Implementing the chat client
+  <a class="anchor" href="#implementing-the-chat-client">#</a>
+</h2>
+<p>Chat clients can be created by passing a user name and the path to a remote chat server.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Behavior<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">create</span><span style="color:#f92672">(</span>String name<span style="color:#f92672">,</span> String path<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> Behaviors<span style="color:#f92672">.</span><span style="color:#a6e22e">setup</span><span style="color:#f92672">(</span>ctx <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">new</span> ChatClient<span style="color:#f92672">(</span>ctx<span style="color:#f92672">,</span> name<span style="color:#f92672">,</span> path<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+
+<span style="color:#66d9ef">private</span> String name<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> String path<span style="color:#f92672">;</span>
+<span style="color:#66d9ef">private</span> ActorRef<span style="color:#f92672">&lt;</span>ChatServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">&gt;</span> server<span style="color:#f92672">;</span>
+
+<span style="color:#66d9ef">private</span> <span style="color:#a6e22e">ChatClient</span><span style="color:#f92672">(</span>ActorContext<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&gt;</span> ctx<span style="color:#f92672">,</span> String name<span style="color:#f92672">,</span> String path<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">super</span><span style="color:#f92672">(</span>ctx<span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> name<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">path</span> <span style="color:#f92672">=</span> path<span style="color:#f92672">;</span>
+    ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">getSelf</span><span style="color:#f92672">().</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span>Created<span style="color:#f92672">.</span><span style="color:#a6e22e">INSTANCE</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>When a chat client is created (or restarted)
+it sends itself a <code>Created</code> message,
+which is defined as an enum because it does not have any contents.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">enum</span> Created <span style="color:#66d9ef">implements</span> Event <span style="color:#f92672">{</span> INSTANCE <span style="color:#f92672">}</span>
+</code></pre></div><p>As it is only used internally, the type is declared private.
+The following method handles such messages by trying to login to the server.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> ChatClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>Created msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    ActorContext<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&gt;</span> ctx <span style="color:#f92672">=</span> getContext<span style="color:#f92672">();</span>
+    ActorRef<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&gt;</span> self <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">getSelf</span><span style="color:#f92672">();</span>
+    ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">getSystem</span><span style="color:#f92672">().</span><span style="color:#a6e22e">classicSystem</span><span style="color:#f92672">().</span><span style="color:#a6e22e">actorSelection</span><span style="color:#f92672">(</span>path<span style="color:#f92672">)</span> <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> ChatServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Login</span><span style="color:#f92672">(</span>name<span style="color:#f92672">,</span> self<span style="color:#f92672">),</span> Adapter<span style="color:#f92672">.</span><span style="color:#a6e22e">toClassic</span><span style="color:#f92672">(</span>self<span style="color:#f92672">));</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>We use actor selection again, to communicate with a remote actor.
+This time however, we do not resolve an actor reference immediately.
+Instead we use <code>ActorSelection.tell</code> to send a message to the server
+without resolving its reference.
+The server will respond with a message containing its reference
+so we can store it in the local state.</p>
+<p>Another interesting aspect is when to logout from the server.
+Actors can not only respond to messages but also to signals
+used internally by Akka.
+In its <code>createReceive</code> method,
+the chat client uses the following calls on the receive builder.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">    <span style="color:#f92672">.</span><span style="color:#a6e22e">onSignal</span><span style="color:#f92672">(</span>PreRestart<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> signal <span style="color:#f92672">-&gt;</span> quit<span style="color:#f92672">())</span>
+    <span style="color:#f92672">.</span><span style="color:#a6e22e">onSignal</span><span style="color:#f92672">(</span>PostStop<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> signal <span style="color:#f92672">-&gt;</span> quit<span style="color:#f92672">())</span>
+</code></pre></div><p>Those signals are sent before the actor restarts and after it was stopped.
+They are a good place to perform cleanup actions.
+We use them here to logout from the chat server.</p>
+<h2 id="task-implement-the-chat-server">
+  Task: Implement the chat server
+  <a class="anchor" href="#task-implement-the-chat-server">#</a>
+</h2>
+<p>The <code>ChatServer</code> class defines messages
+that clients can send to a chat server.
+Implement a corresponding behavior
+after a conscious decision for the functional or object-oriented API.</p>
+<p>The behavior should react to each possible message
+with appropriate responses to clients as well as local state changes.
+More specifically, the behaviour should
+capture local state associating client references with names.
+<code>Login</code> requests should be answered with a <code>LoggedIn</code> event
+or with an <code>Error</code> event if the chosen name is already taken.
+Additionally, other users should be alerted to successful registrations
+via <code>UserJoined</code>.
+When a registered client requests to <code>Send</code> a message,
+other clients should be notified via <code>NewMessage</code>.
+Unregistered clients should not be able to send messages
+but receive an <code>Error</code> event.
+When a registered client quits,
+others should be notified via the <code>UserLeft</code> event.</p>
+<p>In order to test your implementation,
+start a <code>RemoteChatServer</code> and several <code>RemoteChatClient</code>s.
+The latter can be given a user name and a port as command line arguments
+to avoid conflicts.
+Are existing users notified about new users?
+What happens, if a client tries to login with an already exiting name?
+Are messages sent by one user displayed to other users correctly?
+Are existing users notified about leaving users?</p>
+<p>As a bonus, write unit tests that document
+that the chat server responds to messages as intended.</p>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+
+</div>
+
+ 
+        <a rel="license" href="http://creativecommons.org/licenses/by-nd/4.0/" target="_blank"
+  >&copy; 2021</a>
+by
+<a href="http://twitter.com/sebfisch" target="_blank">Sebastian Fischer</a>
+
+      </footer>
+
+      
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      
+  <nav id="TableOfContents">
+  <ul>
+    <li><a href="#implementing-the-chat-client">Implementing the chat client</a></li>
+    <li><a href="#task-implement-the-chat-server">Task: Implement the chat server</a></li>
+  </ul>
+</nav>
+
+ 
+    </aside>
+    
+  </main>
+
+  
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

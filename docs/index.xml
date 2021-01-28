@@ -92,5 +92,67 @@ void testCreatingCompletedFuture() { final CompletableFuture&amp;lt;Integer&amp;
       <description>Throttling Tasks #  Finally, we look at a class used by the grid coloring application that is useful in other contexts too. To implement the animation, the coloring algorithm notifies the image canvas to rerender the image when colors in the grid change. However, when too many notifications arrive in a short time the user interface thread becomes unresponsive. To avoid overloading the user interface thread with notifications we use a class for throttling tasks represented as Runnable instances.</description>
     </item>
     
+    <item>
+      <title>Creating Actors</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/actors/creation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/actors/creation/</guid>
+      <description>Creating Actors #  Akka provides different APIs to program with actors. In this section, we look at the typed object-oriented API by discussing unit tests defined in ObjectOrientedActorTests that demonstrate how to use it. Akka provides a helper class to manage actors in tests. We instantiate it as follows.
+static final TestKitJunitResource KIT = new TestKitJunitResource(); Sending and receiving messages #  Our first test uses the test kit to spawn an actor that stops after receiving the first message.</description>
+    </item>
+    
+    <item>
+      <title>Actor Systems</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/actors/systems/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/actors/systems/</guid>
+      <description>Actor Systems #  We now look at how actors can be started outside of tests. All actors started in a program form a hierarchy. The root of this hierarchy is a behavior started by an actor system. Typically, there is only one actor system per application.
+Echoing messages #  As a simple example of an application with multiple actors, we write a program where one actor echos messages back to another.</description>
+    </item>
+    
+    <item>
+      <title>Handling Failure</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/actors/failure/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/actors/failure/</guid>
+      <description>Handling Failure #  In this section we will give a first impression how actor systems can be made resilient against failure by supervising actors, for example, to restart them automatically. We will use tests again to document the corresponding API.
+Failing behaviors #  The Akka documentation cites a distinction between failures and validation errors:
+ A validation error means that the data of a command sent to an actor is not valid, this should rather be modelled as a part of the actor protocol than make the actor throw exceptions.</description>
+    </item>
+    
+    <item>
+      <title>Remote Actors</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/actors/remote/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/actors/remote/</guid>
+      <description>Remote Actors #  Akka supports communication with actors on remote machines. Corresponding actor references can be used just like those for local actors. From a programming point of view the location of an actor is hardly visible which helps develop distributed systems.
+We will use a low level API provided by Akka to demonstrrate remote actors. Although the documentation advises against its direct use, more advanced APIs for distributed actors are out of scope for this tutorial.</description>
+    </item>
+    
+    <item>
+      <title>Functional Interface</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/actors/functional/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/actors/functional/</guid>
+      <description>Functional Interface #  In this section we discuss an alternative API for creating behaviors for actors. We use the same tests as before and adjust the corresponding behavior classes to the functional actor API.
+Receiving messages #  Here is an adjusted definition for the Terminator behaviour.
+static class Terminator { static Behavior&amp;lt;Object&amp;gt; create() { return Behaviors.receiveMessage(msg -&amp;gt; Behaviors.stopped()); } } The class no longer extends AbstractBehavior and uses Behaviours.</description>
+    </item>
+    
+    <item>
+      <title>Chat Application</title>
+      <link>http://sebfisch.github.io/java-concurrency/docs/actors/chat/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>http://sebfisch.github.io/java-concurrency/docs/actors/chat/</guid>
+      <description>Chat Application #  In this section we implement a more complex application using actors. The application can be used to chat on the command line allowing clients on different computers to connect to a remote chat server.
+The messages for the protocol are defined in the classes ChatClient and ChatServer. We will only discuss selected parts of the chat client implementation. Implementing the chat server is left as an exercise.</description>
+    </item>
+    
   </channel>
 </rss>

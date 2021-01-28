@@ -5,16 +5,16 @@
   <meta name="generator" content="Hugo 0.79.1" />
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="">
-<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Docs" />
+<meta name="description" content="Using Actors #  Actors are an alternative programming model for concurrent applications. They avoid the need for synchronization because mutable state is encapsulated inside actors and not shared. Communication between actors happens asynchronously avoiding confusing control flow across object boundaries like with synchronous method calls. Actors process their messages sequentially, avoiding the need for synchronizing access to local state. They are much more lightweight than threads. An application can contain millions of actors without performance problems.">
+<meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Using Actors" />
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/" />
+<meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/actors/" />
 
-<title>Docs | Java Concurrency</title>
+<title>Using Actors | Java Concurrency</title>
 <link rel="manifest" href="/java-concurrency/manifest.json">
 <link rel="icon" href="/java-concurrency/favicon.png" type="image/x-icon">
-<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><link rel="alternate" type="application/rss+xml" href="http://sebfisch.github.io/java-concurrency/docs/index.xml" title="Java Concurrency" />
+<link rel="stylesheet" href="/java-concurrency/book.min.134b70e5316650a530cb42e4e8630b2a01d532bebfc0337028211175336e4806.css" integrity="sha256-E0tw5TFmUKUwy0Lk6GMLKgHVMr6/wDNwKCERdTNuSAY="><link rel="alternate" type="application/rss+xml" href="http://sebfisch.github.io/java-concurrency/docs/actors/index.xml" title="Java Concurrency" />
 <!--
 Made with Book Theme
 https://github.com/alex-shpak/hugo-book
@@ -200,7 +200,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class="">Using Actors</a>
+    <a href="http://sebfisch.github.io/java-concurrency/docs/actors/" class=" active">Using Actors</a>
   
 
           
@@ -342,7 +342,7 @@ https://github.com/alex-shpak/hugo-book
     <img src="/java-concurrency/svg/menu.svg" class="book-icon" alt="Menu" />
   </label>
 
-  <strong>Docs</strong>
+  <strong>Using Actors</strong>
 
   <label for="toc-control">
     
@@ -355,7 +355,7 @@ https://github.com/alex-shpak/hugo-book
   
   <aside class="hidden clearfix">
     
-  
+  <nav id="TableOfContents"></nav>
 
 
   </aside>
@@ -365,7 +365,41 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown"></article>
+  <article class="markdown"><h1 id="using-actors">
+  Using Actors
+  <a class="anchor" href="#using-actors">#</a>
+</h1>
+<p>Actors are an alternative programming model for concurrent applications.
+They avoid the need for synchronization
+because mutable state is encapsulated inside actors and not shared.
+Communication between actors happens asynchronously
+avoiding confusing control flow across object boundaries like with synchronous method calls.
+Actors process their messages sequentially,
+avoiding the need for synchronizing access to local state.
+They are much more lightweight than threads.
+An application can contain millions of actors without performance problems.</p>
+<p>Maybe the most important selling point for actors is their support for fault tolerance.
+Actors can supervise each other,
+and there are easy to understand strategies for handling failures.
+For example, actors can be restarted automatically,
+to keep the system running and in a valid state.</p>
+<p><a href="https://doc.akka.io/docs/akka/current/typed/guide/index.html">Akka</a>
+provides a mature implementation of actors for Java.
+In this part of the tutorial, we will discuss how to
+<a href="creation">create actors</a>,
+how to define
+<a href="systems">systems</a>
+of multiple actors, and how to
+<a href="failure">handle failures</a>
+to improve fault tolerance.
+We will also see
+<a href="remote">remote actors</a>,
+discuss an alternative
+<a href="functional">functional API</a>,
+and finally implement a
+<a href="chat">chat application</a>
+as an example of a realistic application using actors.</p>
+</article>
  
       
 
@@ -397,7 +431,7 @@ by
     
     <aside class="book-toc">
       
-  
+  <nav id="TableOfContents"></nav>
 
  
     </aside>
