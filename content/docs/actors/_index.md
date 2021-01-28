@@ -48,6 +48,6 @@ Here are selected links to parts of the documentation that can be used as a star
  * [Actor References, Paths and Addresses](https://doc.akka.io/docs/akka/current/general/addressing.html)
  * [Actor Discovery](https://doc.akka.io/docs/akka/current/typed/actor-discovery.html)
  * [Interaction Patterns](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html)
- * [Mesage Delivery Reliability](https://doc.akka.io/docs/akka/current/general/message-delivery-reliability.html)
+ * [Message Delivery Reliability](https://doc.akka.io/docs/akka/current/general/message-delivery-reliability.html)
  * [Akka and the Java Memory Model](https://doc.akka.io/docs/akka/current/general/jmm.html)
 
