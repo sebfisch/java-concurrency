@@ -37,7 +37,7 @@ in order of appearance.
  * [Deadlock](https://docs.oracle.com/javase/tutorial/essential/concurrency/deadlock.html)
  * [CompletableFuture](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CompletableFuture.html)
  * [CompletionStage](https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/util/concurrent/CompletionStage.html)
-
+ * [Akka](https://doc.akka.io/docs/akka/current/typed/guide/index.html) 
 
 
 
