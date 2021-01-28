@@ -45,6 +45,7 @@ in order of appearance.
  * [Actor Discovery](https://doc.akka.io/docs/akka/current/typed/actor-discovery.html)
  * [Interaction Patterns](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html)
  * [Mesage Delivery Reliability](https://doc.akka.io/docs/akka/current/general/message-delivery-reliability.html)
+ * [Reliable Delivery](https://doc.akka.io/docs/akka/current/typed/reliable-delivery.html)
  * [Akka and the Java Memory Model](https://doc.akka.io/docs/akka/current/general/jmm.html)
 
 
