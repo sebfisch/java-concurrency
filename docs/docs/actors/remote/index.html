@@ -433,7 +433,7 @@ Actors can be accessed via their path which is a URL with the following format.<
 The root of the actor system has the path <code>/user</code>
 because there is also another root <code>/system</code> used internally by Akka.</p>
 <p>The <code>SendRemote</code> message is handled as follows.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>SendRemote msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">receive</span><span style="color:#f92672">(</span>SendRemote msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> timeout <span style="color:#f92672">=</span> 10<span style="color:#f92672">;</span>
     <span style="color:#66d9ef">final</span> ActorContext<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> ctx <span style="color:#f92672">=</span> getContext<span style="color:#f92672">();</span>
 

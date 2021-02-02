@@ -48,7 +48,7 @@ As it is only used internally, the type is declared private.
 The following method handles such messages by trying to login to the server.
 
 ```java
-private ChatClient respond(Created msg) {
+private ChatClient receive(Created msg) {
     ActorContext<Event> ctx = getContext();
     ActorRef<Event> self = ctx.getSelf();
     ctx.getSystem().classicSystem().actorSelection(path) //
@@ -65,7 +65,7 @@ The server will respond with a message containing its reference
 so we can store it in the local state.
 
 Another interesting aspect is when to logout from the server.
-Actors can not only respond to messages but also to signals
+Actors can not only receive messages but also signals
 used internally by Akka.
 In its `createReceive` method, 
 the chat client uses the following calls on the receive builder.

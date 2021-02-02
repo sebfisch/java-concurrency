@@ -7,13 +7,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Parallel Streams #  Java streams can be processed in parallel automatically. The implementation of parallel streams is based on work stealing with the common ForkJoinPool.
 Our StreamRenderer is computing pixels using a stream. Here is part of its implementation, again.
-IntStream.range(0, w * pixels.size.y).forEach(index -&gt; { // omitted }); The following change turns this implementation into a work stealing renderer using available processors efficiently.
-IntStream.range(0, w * pixels.size.y).parallel().forEach(index -&gt; { // omitted }); The following picture has been created with the parallel version of the StreamRenderer.">
+box.pixels().forEach(pixel -&gt; { // omitted }); The following change turns this implementation into a work stealing renderer using available processors efficiently.
+box.pixels().parallel().forEach(pixel -&gt; { // omitted }); The following picture has been created with the parallel version of the StreamRenderer.">
 <meta name="theme-color" content="#FFFFFF"><meta property="og:title" content="Parallel Streams" />
 <meta property="og:description" content="Parallel Streams #  Java streams can be processed in parallel automatically. The implementation of parallel streams is based on work stealing with the common ForkJoinPool.
 Our StreamRenderer is computing pixels using a stream. Here is part of its implementation, again.
-IntStream.range(0, w * pixels.size.y).forEach(index -&gt; { // omitted }); The following change turns this implementation into a work stealing renderer using available processors efficiently.
-IntStream.range(0, w * pixels.size.y).parallel().forEach(index -&gt; { // omitted }); The following picture has been created with the parallel version of the StreamRenderer." />
+box.pixels().forEach(pixel -&gt; { // omitted }); The following change turns this implementation into a work stealing renderer using available processors efficiently.
+box.pixels().parallel().forEach(pixel -&gt; { // omitted }); The following picture has been created with the parallel version of the StreamRenderer." />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://sebfisch.github.io/java-concurrency/docs/using/parallel_streams/" />
 <meta property="article:modified_time" content="2021-01-13T11:00:24+01:00" />
@@ -380,13 +380,13 @@ The implementation of parallel streams is based on
 work stealing with the common <code>ForkJoinPool</code>.</p>
 <p>Our <code>StreamRenderer</code> is computing pixels using a stream.
 Here is part of its implementation, again.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> w <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span><span style="color:#f92672">).</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">box<span style="color:#f92672">.</span><span style="color:#a6e22e">pixels</span><span style="color:#f92672">().</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>pixel <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// omitted
 </span><span style="color:#75715e"></span><span style="color:#f92672">});</span>
 </code></pre></div><p>The following change turns this implementation
 into a work stealing renderer
 using available processors efficiently.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">IntStream<span style="color:#f92672">.</span><span style="color:#a6e22e">range</span><span style="color:#f92672">(</span>0<span style="color:#f92672">,</span> w <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span><span style="color:#f92672">).</span><span style="color:#a6e22e">parallel</span><span style="color:#f92672">().</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>index <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">box<span style="color:#f92672">.</span><span style="color:#a6e22e">pixels</span><span style="color:#f92672">().</span><span style="color:#a6e22e">parallel</span><span style="color:#f92672">().</span><span style="color:#a6e22e">forEach</span><span style="color:#f92672">(</span>pixel <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// omitted
 </span><span style="color:#75715e"></span><span style="color:#f92672">});</span>
 </code></pre></div><p>The following picture has been created with the parallel version

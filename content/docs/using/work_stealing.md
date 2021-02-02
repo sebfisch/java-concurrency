@@ -168,9 +168,9 @@ just like our last test instead of using the common pool
 in order to be able to shut it down.
 
 ```java
-public boolean render(final Box pixels) {
+public boolean render(final Box box) {
     final ForkJoinPool pool = new ForkJoinPool();
-    fork(pool, pixels);
+    fork(pool, box);
     return join(pool);
 }
 ```
@@ -179,8 +179,8 @@ The `fork` method creates a recursive action
 and executes it using the pool.
 
 ```java
-private void fork(final ForkJoinPool pool, final Box pixels) {
-    pool.execute(new Action(pixels));
+private void fork(final ForkJoinPool pool, final Box box) {
+    pool.execute(new Action(box));
 }
 ```
 
@@ -211,24 +211,24 @@ The class for recursive rendering actions is defined as follows.
 
 ```java
 private class Action extends RecursiveAction {
-    private final Box pixels;
+    private final Box box;
 
-    Action(final Box pixels) {
-        this.pixels = pixels;
+    Action(final Box box) {
+        this.box = box;
     }
 
     @Override
     protected void compute() {
-        if (pixels.size.x * pixels.size.y < THRESHOLD) {
-            renderer.render(pixels);
+        if (box.size.x * box.size.y < THRESHOLD) {
+            renderer.render(box);
         } else {
-            final List<Action> actions = pixels.split() //
+            final List<Action> actions = box.split() //
                 .map(Action::new) //
                 .collect(Collectors.toList());
             if (actions.size() > 1) {
                 invokeAll(actions);
             } else {
-                renderer.render(pixels);
+                renderer.render(box);
             }
         }
     }
@@ -266,7 +266,7 @@ Modify the definition of recursive rendering actions
 to use the version of the `render` method of the
 underlying `StreamRenderer`
 that allows to check a custom thread for interruptions.
-Pass the calling thread when constructing the actions,
+Pass a custom `Interruptible` instance when constructing the actions,
 so it can be passed to calls to `render` in the base case.
 Can the rendering process still be aborted successfully
 after your changes?

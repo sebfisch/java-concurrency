@@ -521,15 +521,15 @@ so our tested task would run until then.</p>
 Its <code>render</code> method creates a <code>ForkJoinPool</code>
 just like our last test instead of using the common pool
 in order to be able to shut it down.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">render</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box box<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">final</span> ForkJoinPool pool <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ForkJoinPool<span style="color:#f92672">();</span>
-    fork<span style="color:#f92672">(</span>pool<span style="color:#f92672">,</span> pixels<span style="color:#f92672">);</span>
+    fork<span style="color:#f92672">(</span>pool<span style="color:#f92672">,</span> box<span style="color:#f92672">);</span>
     <span style="color:#66d9ef">return</span> join<span style="color:#f92672">(</span>pool<span style="color:#f92672">);</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>The <code>fork</code> method creates a recursive action
 and executes it using the pool.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">fork</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ForkJoinPool pool<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Action<span style="color:#f92672">(</span>pixels<span style="color:#f92672">));</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">fork</span><span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> ForkJoinPool pool<span style="color:#f92672">,</span> <span style="color:#66d9ef">final</span> Box box<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    pool<span style="color:#f92672">.</span><span style="color:#a6e22e">execute</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Action<span style="color:#f92672">(</span>box<span style="color:#f92672">));</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>We use <code>execute</code> instead of <code>submit</code>
 which does not return a future.
@@ -551,24 +551,24 @@ When the calling thread is interrupted
 the rendering tasks are terminated by shutting down the pool immediately.</p>
 <p>The class for recursive rendering actions is defined as follows.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Action</span> <span style="color:#66d9ef">extends</span> RecursiveAction <span style="color:#f92672">{</span>
-    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Box box<span style="color:#f92672">;</span>
 
-    Action<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box pixels<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">pixels</span> <span style="color:#f92672">=</span> pixels<span style="color:#f92672">;</span>
+    Action<span style="color:#f92672">(</span><span style="color:#66d9ef">final</span> Box box<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">box</span> <span style="color:#f92672">=</span> box<span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
 
     <span style="color:#a6e22e">@Override</span>
     <span style="color:#66d9ef">protected</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">compute</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span> <span style="color:#f92672">&lt;</span> THRESHOLD<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>box<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> box<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">.</span><span style="color:#a6e22e">y</span> <span style="color:#f92672">&lt;</span> THRESHOLD<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>box<span style="color:#f92672">);</span>
         <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-            <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Action<span style="color:#f92672">&gt;</span> actions <span style="color:#f92672">=</span> pixels<span style="color:#f92672">.</span><span style="color:#a6e22e">split</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
+            <span style="color:#66d9ef">final</span> List<span style="color:#f92672">&lt;</span>Action<span style="color:#f92672">&gt;</span> actions <span style="color:#f92672">=</span> box<span style="color:#f92672">.</span><span style="color:#a6e22e">split</span><span style="color:#f92672">()</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>                <span style="color:#f92672">.</span><span style="color:#a6e22e">map</span><span style="color:#f92672">(</span>Action<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">)</span> <span style="color:#75715e">//
 </span><span style="color:#75715e"></span>                <span style="color:#f92672">.</span><span style="color:#a6e22e">collect</span><span style="color:#f92672">(</span>Collectors<span style="color:#f92672">.</span><span style="color:#a6e22e">toList</span><span style="color:#f92672">());</span>
             <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>actions<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">&gt;</span> 1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
                 invokeAll<span style="color:#f92672">(</span>actions<span style="color:#f92672">);</span>
             <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-                renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>pixels<span style="color:#f92672">);</span>
+                renderer<span style="color:#f92672">.</span><span style="color:#a6e22e">render</span><span style="color:#f92672">(</span>box<span style="color:#f92672">);</span>
             <span style="color:#f92672">}</span>
         <span style="color:#f92672">}</span>
     <span style="color:#f92672">}</span>
@@ -602,7 +602,7 @@ Modify the definition of recursive rendering actions
 to use the version of the <code>render</code> method of the
 underlying <code>StreamRenderer</code>
 that allows to check a custom thread for interruptions.
-Pass the calling thread when constructing the actions,
+Pass a custom <code>Interruptible</code> instance when constructing the actions,
 so it can be passed to calls to <code>render</code> in the base case.
 Can the rendering process still be aborted successfully
 after your changes?</p>

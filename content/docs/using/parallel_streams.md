@@ -14,7 +14,7 @@ Our `StreamRenderer` is computing pixels using a stream.
 Here is part of its implementation, again.
 
 ```java
-IntStream.range(0, w * pixels.size.y).forEach(index -> {
+box.pixels().forEach(pixel -> {
   // omitted
 });
 ```
@@ -24,7 +24,7 @@ into a work stealing renderer
 using available processors efficiently.
 
 ```java
-IntStream.range(0, w * pixels.size.y).parallel().forEach(index -> {
+box.pixels().parallel().forEach(pixel -> {
   // omitted
 });
 ```

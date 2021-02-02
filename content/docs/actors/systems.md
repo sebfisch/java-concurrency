@@ -148,7 +148,7 @@ We have already seen that the `Send` message wraps text
 and a reference to a server actor.
 The `Log` message wraps a server response.
 
-As message handlers we use method references to an overloaded respond method.
+As message handlers we use method references to an overloaded receive method.
 The builder method `onMessage` is used to restrict the handler
 to specific message types.
 
@@ -156,16 +156,16 @@ to specific message types.
 @Override
 public Receive<Request> createReceive() {
     return newReceiveBuilder()
-        .onMessage(Send.class, this::respond)
-        .onMessage(Log.class, this::respond)
+        .onMessage(Send.class, this::receive)
+        .onMessage(Log.class, this::receive)
         .build();
 }
 ```
 
-Clients respond to `Log` messages by printing the wrapped text.
+When clients receive `Log` messages they print the wrapped text.
 
 ```java
-private EchoClient respond(Log msg) {
+private EchoClient receive(Log msg) {
     System.out.printf("received: %s%n", msg.response.text);
     return this;
 }
@@ -179,7 +179,7 @@ Both messages are equivalent,
 but we use different types for demonstration purposes.
 
 ```java
-private EchoClient respond(Send msg) {
+private EchoClient receive(Send msg) {
     final ActorRef<EchoServer.Response> logAdapter =
         getContext().messageAdapter(EchoServer.Response.class, Log::new);
     msg.server.tell(new EchoServer.Request(msg.text, logAdapter));

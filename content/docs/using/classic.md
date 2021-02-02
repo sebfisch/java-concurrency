@@ -178,21 +178,18 @@ which uses stream programming to go through all pixels.
 public class StreamRenderer extends AbstractRenderer {
 
     @Override
-    public boolean render(final Box pixels) {
+    public boolean render(final Box box) {
         final Thread origin = Thread.currentThread();
-        return render(pixels, origin::isInterrupted);
+        return render(box, origin::isInterrupted);
     }
 
-    public boolean render(final Box pixels, final Interruptible origin) {
+    public boolean render(final Box box, final Interruptible origin) {
         if (image == null || raster == null) {
             return false;
         }
 
-        final int w = pixels.size.x;
-        IntStream.range(0, w * pixels.size.y).forEach(index -> {
+        box.pixels().forEach(pixel -> {
             if (!origin.wasInterrupted()) {
-                final Pixel pixel = //
-                    new Pixel(index % w, index / w).plus(pixels.min);
                 raster.setPixelColor(pixel, image.colorAt(pixel));
             }
         });
@@ -234,8 +231,8 @@ for rendering each individual part.
 Here is its `render` method.
 
 ```java
-public boolean render(final Box pixels) {
-    final List<Thread> threads = pixels.split() //
+public boolean render(final Box box) {
+    final List<Thread> threads = box.split() //
         .map(part -> (Runnable) () -> renderer.render(part)) //
         .map(Thread::new) //
         .collect(Collectors.toList());

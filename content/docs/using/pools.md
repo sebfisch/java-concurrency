@@ -143,9 +143,9 @@ Here is the `render` method
 of the `ThreadPoolRenderer`.
 
 ```java
-public boolean render(final Box pixels) {
+public boolean render(final Box box) {
     final InterruptFlag self = new InterruptFlag();
-    return join(fork(ForkJoinPool.commonPool(), pixels, self), self);
+    return join(fork(ForkJoinPool.commonPool(), box, self), self);
 }
 ```
 
@@ -158,8 +158,8 @@ Here is the implementation of `fork`.
 
 ```java
 private List<Future<?>> fork(final ExecutorService pool, //
-        final Box pixels, final Interruptible origin) {
-    return pixels.split() //
+        final Box box, final Interruptible origin) {
+    return box.split() //
         .map(part -> (Runnable) () -> renderer.render(part, origin)) //
         .map(pool::submit) //
         .collect(Collectors.toList());

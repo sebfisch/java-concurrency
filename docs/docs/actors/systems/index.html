@@ -495,18 +495,18 @@ which we use as type parameter for the message type.
 We have already seen that the <code>Send</code> message wraps text
 and a reference to a server actor.
 The <code>Log</code> message wraps a server response.</p>
-<p>As message handlers we use method references to an overloaded respond method.
+<p>As message handlers we use method references to an overloaded receive method.
 The builder method <code>onMessage</code> is used to restrict the handler
 to specific message types.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#a6e22e">@Override</span>
 <span style="color:#66d9ef">public</span> Receive<span style="color:#f92672">&lt;</span>Request<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">createReceive</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">return</span> newReceiveBuilder<span style="color:#f92672">()</span>
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Send<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>respond<span style="color:#f92672">)</span>
-        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>respond<span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Send<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>receive<span style="color:#f92672">)</span>
+        <span style="color:#f92672">.</span><span style="color:#a6e22e">onMessage</span><span style="color:#f92672">(</span>Log<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">::</span>receive<span style="color:#f92672">)</span>
         <span style="color:#f92672">.</span><span style="color:#a6e22e">build</span><span style="color:#f92672">();</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><p>Clients respond to <code>Log</code> messages by printing the wrapped text.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>Log msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</code></pre></div><p>When clients receive <code>Log</code> messages they print the wrapped text.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">receive</span><span style="color:#f92672">(</span>Log msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;received: %s%n&#34;</span><span style="color:#f92672">,</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">response</span><span style="color:#f92672">.</span><span style="color:#a6e22e">text</span><span style="color:#f92672">);</span>
     <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
 <span style="color:#f92672">}</span>
@@ -516,7 +516,7 @@ Like <code>Send</code>, the <code>EchoServer.Request</code> message also wraps
 an actor reference in addition to the text.
 Both messages are equivalent,
 but we use different types for demonstration purposes.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>Send msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> EchoClient <span style="color:#a6e22e">receive</span><span style="color:#f92672">(</span>Send msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#66d9ef">final</span> ActorRef<span style="color:#f92672">&lt;</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Response</span><span style="color:#f92672">&gt;</span> logAdapter <span style="color:#f92672">=</span>
         getContext<span style="color:#f92672">().</span><span style="color:#a6e22e">messageAdapter</span><span style="color:#f92672">(</span>EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Response</span><span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">,</span> Log<span style="color:#f92672">::</span><span style="color:#66d9ef">new</span><span style="color:#f92672">);</span>
     msg<span style="color:#f92672">.</span><span style="color:#a6e22e">server</span><span style="color:#f92672">.</span><span style="color:#a6e22e">tell</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> EchoServer<span style="color:#f92672">.</span><span style="color:#a6e22e">Request</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">text</span><span style="color:#f92672">,</span> logAdapter<span style="color:#f92672">));</span>

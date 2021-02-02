@@ -75,7 +75,7 @@ because there is also another root `/system` used internally by Akka.
 The `SendRemote` message is handled as follows.
 
 ```java
-private EchoClient respond(SendRemote msg) {
+private EchoClient receive(SendRemote msg) {
     final int timeout = 10;
     final ActorContext<Request> ctx = getContext();
 

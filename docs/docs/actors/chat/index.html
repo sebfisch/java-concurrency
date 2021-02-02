@@ -408,7 +408,7 @@ which is defined as an enum because it does not have any contents.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">enum</span> Created <span style="color:#66d9ef">implements</span> Event <span style="color:#f92672">{</span> INSTANCE <span style="color:#f92672">}</span>
 </code></pre></div><p>As it is only used internally, the type is declared private.
 The following method handles such messages by trying to login to the server.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> ChatClient <span style="color:#a6e22e">respond</span><span style="color:#f92672">(</span>Created msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> ChatClient <span style="color:#a6e22e">receive</span><span style="color:#f92672">(</span>Created msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     ActorContext<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&gt;</span> ctx <span style="color:#f92672">=</span> getContext<span style="color:#f92672">();</span>
     ActorRef<span style="color:#f92672">&lt;</span>Event<span style="color:#f92672">&gt;</span> self <span style="color:#f92672">=</span> ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">getSelf</span><span style="color:#f92672">();</span>
     ctx<span style="color:#f92672">.</span><span style="color:#a6e22e">getSystem</span><span style="color:#f92672">().</span><span style="color:#a6e22e">classicSystem</span><span style="color:#f92672">().</span><span style="color:#a6e22e">actorSelection</span><span style="color:#f92672">(</span>path<span style="color:#f92672">)</span> <span style="color:#75715e">//
@@ -422,7 +422,7 @@ without resolving its reference.
 The server will respond with a message containing its reference
 so we can store it in the local state.</p>
 <p>Another interesting aspect is when to logout from the server.
-Actors can not only respond to messages but also to signals
+Actors can not only receive messages but also signals
 used internally by Akka.
 In its <code>createReceive</code> method,
 the chat client uses the following calls on the receive builder.</p>
